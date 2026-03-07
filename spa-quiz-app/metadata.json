@@ -1,0 +1,306 @@
+{
+  "quizzes": [
+    {
+      "id": "spa-quiz-app-agent-skills-basics",
+      "name": "Agent Skills 基礎クイズセット",
+      "description": "GitHub Copilot Agent Skills の基礎概念、従来のプロンプト手法との違い、スキルの仕組みを理解するためのクイズセット。Part 1-1, 1-2, 1-3 全体をカバー",
+      "category": "Agent Skills",
+      "icon": "🎯",
+      "questionCount": 15,
+      "difficulty": "intermediate",
+      "dataPath": "basics/agent-skills-basics.json",
+      "parentId": null,
+      "group": "basics",
+      "level": 1,
+      "order": 1,
+      "estimatedLearningTime": "20-25分",
+      "topics": [
+        "Agent Skills の定義",
+        "スキルの構成要素",
+        "従来のプロンプト手法との比較",
+        "スキル定義ファイル",
+        "実行フロー",
+        "メタデータの役割",
+        "パラメータ管理",
+        "プロンプトテンプレート",
+        "出力形式の検証",
+        "スキルの自動選択"
+      ],
+      "difficultyDistribution": {
+        "beginner": {
+          "count": 2,
+          "percentage": 13
+        },
+        "intermediate": {
+          "count": 11,
+          "percentage": 73
+        },
+        "advanced": {
+          "count": 2,
+          "percentage": 13
+        }
+      },
+      "coverage": {
+        "part": "1",
+        "subParts": ["1-1", "1-2", "1-3"],
+        "title": "Agent Skills の基礎",
+        "sections": [
+          "Agent Skills とは何か",
+          "従来のプロンプト手法との違い",
+          "スキルの仕組み理解"
+        ]
+      },
+      "targetAudience": "intermediate",
+      "prerequisites": [],
+      "relatedQuizzes": ["spa-quiz-app-skill-format-overview"],
+      "createdAt": "2026-03-07",
+      "updatedAt": "2026-03-07"
+    },
+    {
+      "id": "spa-quiz-app-skill-format-overview",
+      "name": "スキル形式の理解 - 初級クイズ",
+      "description": "Agent Skills の基本概念、SKILL.md 形式とは何か、スキル配置場所、サポートプラットフォームを理解する初級向けクイズセット。Part 0 をカバー",
+      "category": "Agent Skills",
+      "icon": "📚",
+      "questionCount": 5,
+      "difficulty": "beginner",
+      "dataPath": "fundamentals/skill-format-overview.json",
+      "parentId": null,
+      "group": "fundamentals",
+      "level": 1,
+      "order": 0,
+      "estimatedLearningTime": "5-8分",
+      "topics": [
+        "Agent Skills のオープンスタンダード",
+        "SKILL.md 形式の特徴",
+        "JSON 形式との違い",
+        "スキル配置場所",
+        "サポートされるプラットフォーム",
+        "個人用スキルの管理"
+      ],
+      "difficultyDistribution": {
+        "beginner": {
+          "count": 5,
+          "percentage": 100
+        },
+        "intermediate": {
+          "count": 0,
+          "percentage": 0
+        },
+        "advanced": {
+          "count": 0,
+          "percentage": 0
+        }
+      },
+      "coverage": {
+        "part": "0",
+        "subParts": ["0"],
+        "title": "スキル形式の選択と実装",
+        "sections": [
+          "Agent Skills のオープンスタンダード",
+          "SKILL.md形式（推奨）",
+          "JSON形式（内部通信）",
+          "フォーマット選択ガイド"
+        ]
+      },
+      "targetAudience": "beginner",
+      "prerequisites": [],
+      "relatedQuizzes": ["spa-quiz-app-agent-skills-basics"],
+      "createdAt": "2026-03-07",
+      "updatedAt": "2026-03-07"
+    },
+    {
+      "id": "spa-quiz-app-implementation-comprehensive",
+      "name": "スキル実装 - 上級クイズセット",
+      "description": "Agent Skills の実装パターン全体を理解する上級者向けクイズセット。スキル設計の5フェーズ、複雑なパラメータ定義、複数形式対応、エラーハンドリング等をカバー。Part 3-1～3-5 全体をカバー",
+      "category": "Agent Skills",
+      "icon": "⚙️",
+      "questionCount": 23,
+      "difficulty": "advanced",
+      "dataPath": "implementation/implementation-comprehensive.json",
+      "parentId": null,
+      "group": "implementation",
+      "level": 1,
+      "order": 3,
+      "estimatedLearningTime": "30-40分",
+      "topics": [
+        "スキル作成の5フェーズ",
+        "パラメータ定義と制約",
+        "複雑なパラメータ型",
+        "プロンプトテンプレート設計",
+        "出力フォーマット検証",
+        "メタデータ管理",
+        "SKILL.md vs JSON",
+        "複数形式対応（ドキュメント、テストフレームワーク）",
+        "エラーハンドリング",
+        "テストカバレッジ設計",
+        "LLMパラメータ最適化",
+        "複数スキルのチェーン実行",
+        "多言語対応",
+        "キャッシングと最適化",
+        "スキルの可視性と公開範囲"
+      ],
+      "difficultyDistribution": {
+        "beginner": {
+          "count": 2,
+          "percentage": 9
+        },
+        "intermediate": {
+          "count": 9,
+          "percentage": 39
+        },
+        "advanced": {
+          "count": 12,
+          "percentage": 52
+        }
+      },
+      "coverage": {
+        "part": "3",
+        "subParts": ["3-1", "3-2", "3-3", "3-4", "3-5"],
+        "title": "Agent Skills の実装",
+        "sections": [
+          "スキル作成のステップバイステップガイド",
+          "スキルの構成要素",
+          "サンプルスキル #1 - コード品質分析",
+          "サンプルスキル #2 - ドキュメント生成",
+          "サンプルスキル #3 - テスト生成"
+        ]
+      },
+      "targetAudience": "advanced",
+      "prerequisites": ["spa-quiz-app-agent-skills-basics", "spa-quiz-app-skill-format-overview"],
+      "relatedQuizzes": ["spa-quiz-app-advanced-comprehensive"],
+      "createdAt": "2026-03-07",
+      "updatedAt": "2026-03-07"
+    },
+    {
+      "id": "spa-quiz-app-advanced-comprehensive",
+      "name": "スキル活用戦略 - 上級クイズセット",
+      "description": "Agent Skills をチーム・組織レベルで効果的に活用するための戦略的知識。スキル共有戦略、ライフサイクル管理、パフォーマンス最適化、トラブルシューティング等をカバー。Part 4-1～4-4 全体をカバー",
+      "category": "Agent Skills",
+      "icon": "🚀",
+      "questionCount": 23,
+      "difficulty": "advanced",
+      "dataPath": "advanced/advanced-comprehensive.json",
+      "parentId": null,
+      "group": "advanced",
+      "level": 1,
+      "order": 4,
+      "estimatedLearningTime": "35-45分",
+      "topics": [
+        "スキル共有戦略（リポジトリベース、パッケージ配布、ポータル）",
+        "スキルレジストリ設計",
+        "スキルのライフサイクル管理",
+        "Draft→Beta→Published→Mature→Deprecated",
+        "ベータテスト戦略",
+        "スキル採用推進",
+        "パフォーマンスメトリクス",
+        "実行時間のプロファイリング",
+        "プロンプト最適化",
+        "キャッシング戦略",
+        "スキル定義エラーの診断",
+        "トラブルシューティング手法",
+        "複数スキルの依存関係管理",
+        "ROI（投資対効果）の計測",
+        "ユーザー採用と採用率向上",
+        "セキュリティ と アクセス制御",
+        "長期運用と监視"
+      ],
+      "difficultyDistribution": {
+        "beginner": {
+          "count": 2,
+          "percentage": 9
+        },
+        "intermediate": {
+          "count": 8,
+          "percentage": 35
+        },
+        "advanced": {
+          "count": 13,
+          "percentage": 56
+        }
+      },
+      "coverage": {
+        "part": "4",
+        "subParts": ["4-1", "4-2", "4-3", "4-4"],
+        "title": "Agent Skills の活用",
+        "sections": [
+          "チーム内スキル共有戦略",
+          "スキル管理とライフサイクル",
+          "パフォーマンス最適化と監視",
+          "トラブルシューティングと問題解決"
+        ]
+      },
+      "targetAudience": "advanced",
+      "prerequisites": ["spa-quiz-app-implementation-comprehensive"],
+      "relatedQuizzes": [],
+      "createdAt": "2026-03-07",
+      "updatedAt": "2026-03-07"
+    },
+    {
+      "id": "spa-quiz-app-advanced-topics-comprehensive",
+      "name": "スキル活用の専門領域 - 上級クイズセット",
+      "description": "複合スキル設計、複数 LLM 統合、外部 API 連携、アーキテクチャ設計パターンなど、スキルエコシステムの高度な実装を理解する上級者向けクイズセット。Part 5-1～5-3 全体をカバー",
+      "category": "Agent Skills",
+      "icon": "🏆",
+      "questionCount": 18,
+      "difficulty": "advanced",
+      "dataPath": "advanced-topics/advanced-topics-comprehensive.json",
+      "parentId": null,
+      "group": "advanced-topics",
+      "level": 1,
+      "order": 5,
+      "estimatedLearningTime": "30-35分",
+      "topics": [
+        "複合スキル（Composite Skills）の設計",
+        "順序実行（Sequential）と並列実行（Parallel）の選択",
+        "ステップ間のデータ受け渡し",
+        "複合スキルのスキーマ検証",
+        "複数 LLM 統合パターン",
+        "コンセンサス分析と信頼度計算",
+        "複数 LLM の成功率制御",
+        "フェイルオーバー戦略",
+        "外部 API 統合",
+        "ナレッジベース連携",
+        "API トークン管理と秘密管理",
+        "キャッシング戦略",
+        "スキル設計の単一責任原則",
+        "入出力契約の定義",
+        "エラーハンドリングと耐障害性",
+        "ストレートスルー パターン",
+        "エンリッチメント パターン",
+        "非ブロッキング（async）処理",
+        "疎結合アーキテクチャ",
+        "システム監視と保守性"
+      ],
+      "difficultyDistribution": {
+        "beginner": {
+          "count": 3,
+          "percentage": 17
+        },
+        "intermediate": {
+          "count": 5,
+          "percentage": 28
+        },
+        "advanced": {
+          "count": 10,
+          "percentage": 56
+        }
+      },
+      "coverage": {
+        "part": "5",
+        "subParts": ["5-1", "5-2", "5-3"],
+        "title": "Agent Skills の専門的活用",
+        "sections": [
+          "複合スキルの設計とオーケストレーション",
+          "複数 LLM の統合と API 連携",
+          "高度な実装パターンとベストプラクティス"
+        ]
+      },
+      "targetAudience": "advanced",
+      "prerequisites": ["spa-quiz-app-advanced-comprehensive"],
+      "relatedQuizzes": ["spa-quiz-app-implementation-comprehensive"],
+      "createdAt": "2026-03-07",
+      "updatedAt": "2026-03-07"
+    }
+  ]
+}
