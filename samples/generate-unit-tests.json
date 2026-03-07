@@ -1,0 +1,198 @@
+{
+  "id": "generate-unit-tests",
+  "version": "1.0.0",
+  "name": "ユニットテスト自動生成",
+  "description": "関数・メソッドのユニットテストコードを自動生成するスキル。複数のテストフレームワークに対応し、正常系・異常系・エッジケースを包括的にカバーしたテストを生成します。",
+  
+  "metadata": {
+    "author": "QA/Testing Team",
+    "authorEmail": "qa@example.com",
+    "created": "2026-03-07",
+    "lastUpdated": "2026-03-07",
+    "category": "testing",
+    "subcategory": "unit-testing",
+    "tags": [
+      "testing",
+      "unit-test",
+      "pytest",
+      "jest",
+      "junit",
+      "python",
+      "javascript",
+      "typescript",
+      "java",
+      "go"
+    ],
+    "documentation": "https://docs.example.com/skills/generate-unit-tests",
+    "license": "MIT",
+    "difficulty": "advanced",
+    "implementationTime": "3-4 hours"
+  },
+  
+  "parameters": {
+    "function_signature": {
+      "type": "string",
+      "description": "テスト対象の関数・メソッドの完全なシグネチャと通常は関数本体を含む（またはシグネチャのみでも可）",
+      "required": true,
+      "minLength": 20,
+      "maxLength": 5000,
+      "example": "def merge_sorted_lists(list1: List[int], list2: List[int]) -> List[int]:"
+    },
+    
+    "language": {
+      "type": "string",
+      "description": "プログラミング言語",
+      "required": true,
+      "enum": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "go"
+      ]
+    },
+    
+    "testFramework": {
+      "type": "string",
+      "description": "テストフレームワーク（言語に応じて選択）",
+      "enum": [
+        "pytest",
+        "unittest",
+        "jest",
+        "mocha",
+        "chai",
+        "junit",
+        "testng",
+        "gotest"
+      ],
+      "default": "pytest"
+    },
+    
+    "coverage": {
+      "type": "string",
+      "description": "テストカバレッジレベル",
+      "enum": [
+        "basic",
+        "standard",
+        "comprehensive"
+      ],
+      "default": "standard",
+      "example": "comprehensive"
+    },
+    
+    "includeNormalCases": {
+      "type": "boolean",
+      "description": "正常系テストを含める",
+      "default": true
+    },
+    
+    "includeEdgeCases": {
+      "type": "boolean",
+      "description": "エッジケーステストを含める",
+      "default": true
+    },
+    
+    "includeErrorCases": {
+      "type": "boolean",
+      "description": "エラーケース・例外テストを含める",
+      "default": true
+    },
+    
+    "mockExternalDependencies": {
+      "type": "boolean",
+      "description": "外部依存関係をモックする",
+      "default": true
+    },
+    
+    "includePerformanceTests": {
+      "type": "boolean",
+      "description": "パフォーマンステストを含める（オプション）",
+      "default": false
+    }
+  },
+  
+  "prompt": {
+    "system": "You are an expert quality assurance engineer and test architect. Your task is to generate comprehensive, professional unit tests that cover normal cases, edge cases, and error scenarios. Tests should be clear, maintainable, and follow industry best practices. Use appropriate assertions and test structures for the specified framework.",
+    
+    "template": "Generate professional unit tests for the following {language} function.\n\nFunction to test:\n{function_signature}\n\nTest framework: {testFramework}\nCoverage level: {coverage}\n\nInclude:\n{coverageInstructions}\n\nRequirements:\n1. Generate {coverage} coverage tests\n2. Follow {testFramework} conventions and best practices\n3. Use descriptive test names (test_<scenario> format)\n4. Include setup/teardown if needed\n5. Add comments explaining complex test logic\n6. Group related tests in test classes/suites\n7. Use appropriate assertions for {language}\n{mockingInstructions}\n\n{coverageDetails}\n\nGenerate the complete test file content in {language} syntax:",
+    
+    "advancedOptions": {
+      "temperature": 0.3,
+      "topP": 0.9,
+      "maxTokens": 3000
+    }
+  },
+  
+  "outputFormat": {
+    "type": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "test_code": {
+          "type": "string",
+          "description": "The generated test code (complete and runnable)"
+        },
+        "language": {
+          "type": "string",
+          "description": "Programming language"
+        },
+        "framework": {
+          "type": "string",
+          "description": "Test framework used"
+        },
+        "test_cases": {
+          "type": "array",
+          "description": "List of generated test cases",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Test case name"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["normal", "edge_case", "error_case", "performance"]
+              },
+              "description": {
+                "type": "string",
+                "description": "What this test validates"
+              }
+            }
+          }
+        },
+        "imports": {
+          "type": "array",
+          "description": "Required imports/dependencies",
+          "items": {"type": "string"}
+        },
+        "setup_instructions": {
+          "type": "string",
+          "description": "Setup instructions"
+        },
+        "run_instructions": {
+          "type": "string",
+          "description": "How to run the tests"
+        }
+      },
+      "required": ["test_code", "language", "framework"]
+    }
+  },
+  
+  "validation": {
+    "timeout": 45,
+    "maxRetries": 2,
+    "caching": {
+      "enabled": true,
+      "ttl": 3600
+    },
+    "rateLimit": {
+      "requestsPerMinute": 20,
+      "requestsPerHour": 800
+    },
+    "costControl": {
+      "maxTokensPerRequest": 3000,
+      "estimatedCostPerRequest": 0.035
+    }
+  }
+}

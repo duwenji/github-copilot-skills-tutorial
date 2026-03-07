@@ -1,0 +1,231 @@
+{
+  "id": "analyze-code-quality",
+  "version": "1.0.0",
+  "name": "コード品質分析",
+  "description": "Python, JavaScript, TypeScript, Java, Go コードの品質を多次元的に分析し、改善提案を提供するスキル",
+  
+  "metadata": {
+    "author": "Development Productivity Team",
+    "authorEmail": "devprod@example.com",
+    "created": "2026-03-07",
+    "lastUpdated": "2026-03-07",
+    "category": "code-analysis",
+    "subcategory": "quality",
+    "tags": [
+      "python",
+      "javascript",
+      "typescript",
+      "java",
+      "go",
+      "code-quality",
+      "code-review",
+      "team-productivity"
+    ],
+    "documentation": "https://docs.example.com/skills/code-quality",
+    "license": "MIT",
+    "difficulty": "beginner",
+    "implementationTime": "1-2 hours"
+  },
+  
+  "parameters": {
+    "code_snippet": {
+      "type": "string",
+      "description": "分析対象のコード（最大5000文字）",
+      "required": true,
+      "minLength": 10,
+      "maxLength": 5000,
+      "example": "def calculate_sum(numbers):\n    result = 0\n    for n in numbers:\n        result = result + n\n    return result"
+    },
+    
+    "language": {
+      "type": "string",
+      "description": "プログラミング言語",
+      "required": true,
+      "enum": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "go"
+      ],
+      "example": "python"
+    },
+    
+    "focusAreas": {
+      "type": "array",
+      "description": "重点分析エリア。複数選択可能。すべて選択がデフォルト",
+      "items": {
+        "type": "string",
+        "enum": [
+          "readability",
+          "performance",
+          "security",
+          "testability"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 4,
+      "default": [
+        "readability",
+        "performance",
+        "security",
+        "testability"
+      ],
+      "example": [
+        "readability",
+        "security"
+      ]
+    },
+    
+    "detailLevel": {
+      "type": "string",
+      "description": "結果の詳細度",
+      "enum": [
+        "basic",
+        "detailed",
+        "comprehensive"
+      ],
+      "default": "detailed",
+      "example": "detailed"
+    },
+    
+    "maxIssues": {
+      "type": "number",
+      "description": "返却する最大指摘件数（スコアが高い順）",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 20,
+      "example": 15
+    }
+  },
+  
+  "prompt": {
+    "system": "You are an expert code reviewer with over 15 years of experience across multiple programming languages. Your task is to analyze code for quality issues in a professional, constructive manner. Provide actionable recommendations, not criticism. Always be specific about what needs improvement and why.",
+    
+    "template": "Analyze the following {language} code for quality issues.\n\nCode to analyze:\n```{language}\n{code_snippet}\n```\n\nAnalysis criteria:\n- Readability: Code clarity, naming conventions, comment quality\n- Performance: Efficiency, algorithmic complexity, unnecessary loops/operations\n- Security: Input validation, vulnerable patterns, data handling\n- Testability: Modularity, function size, separation of concerns\n\nFocus areas: {focusAreas|join(', ')}\nDetail level: {detailLevel}\nMaximum issues to report: {maxIssues}\n\nProvide your analysis in the following JSON format only (no markdown):\n{{\n  \"overallScore\": <number 0-100>,\n  \"categories\": [\n    {{\n      \"name\": <string>,\n      \"score\": <number 0-100>,\n      \"issues\": [<issue1>, <issue2>, ...],\n      \"severity\": [<HIGH|MEDIUM|LOW>, ...]\n    }}\n  ],\n  \"recommendations\": [<actionable suggestion 1>, ...],\n  \"codeSmells\": [<smell 1>, <smell 2>, ...],\n  \"positiveAspects\": [<positive 1>, <positive 2>, ...]\n}}",
+    
+    "variables": [
+      {
+        "name": "language",
+        "type": "string",
+        "source": "parameter"
+      },
+      {
+        "name": "code_snippet",
+        "type": "string",
+        "source": "parameter"
+      },
+      {
+        "name": "focusAreas",
+        "type": "array",
+        "source": "parameter",
+        "processor": "join-comma"
+      },
+      {
+        "name": "detailLevel",
+        "type": "string",
+        "source": "parameter"
+      },
+      {
+        "name": "maxIssues",
+        "type": "number",
+        "source": "parameter"
+      }
+    ],
+    
+    "advancedOptions": {
+      "temperature": 0.3,
+      "topP": 0.9,
+      "maxTokens": 2000
+    }
+  },
+  
+  "outputFormat": {
+    "type": "json",
+    "schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "title": "CodeQualityAnalysis",
+      "description": "Comprehensive code quality analysis result",
+      "properties": {
+        "overallScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Overall quality score (0=poor, 100=excellent)"
+        },
+        "categories": {
+          "type": "array",
+          "description": "Analysis results by category",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["readability", "performance", "security", "testability"]
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "issues": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "severity": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["HIGH", "MEDIUM", "LOW"]
+                }
+              }
+            },
+            "required": ["name", "score", "issues", "severity"]
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 50
+        },
+        "codeSmells": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 20
+        },
+        "positiveAspects": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 20
+        }
+      },
+      "required": ["overallScore", "categories", "recommendations"]
+    }
+  },
+  
+  "validation": {
+    "timeout": 30,
+    "maxRetries": 2,
+    "retryStrategy": {
+      "backoff": "exponential",
+      "initialDelayMs": 1000,
+      "maxDelayMs": 10000
+    },
+    "caching": {
+      "enabled": true,
+      "ttl": 3600,
+      "keyStrategy": "md5-hash-of-inputs"
+    },
+    "rateLimit": {
+      "requestsPerMinute": 30,
+      "requestsPerHour": 1000,
+      "requestsPerDay": 10000
+    },
+    "costControl": {
+      "maxTokensPerRequest": 2000,
+      "estimatedCostPerRequest": 0.015,
+      "dailyBudget": 100
+    }
+  }
+}
