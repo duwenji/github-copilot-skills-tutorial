@@ -137,7 +137,18 @@ User Interface
 ### Step-by-Step実行
 
 ```
-ステップ 1: ユーザーがスキルを実行
+ステップ 1: ユーザーが指示を入力
+│
+├─ 【方法A】明示的なスキル指定
+│   └─ "スキル: analyze-code-quality で、このコードを分析"
+│
+├─ 【方法B】自然言語による自動選択 ← Copilot エージェント機能
+│   └─ "このコードの品質を分析してください"
+│       ↓
+│       Copilot が自動的にスキルを選択
+│
+▼ どちらのケースもこのステップへ
+ステップ 1.5: スキルの選択（自動選択時）
 │
 ├─ ["analyze-code-quality", {
 │     "code_snippet": "def foo():\n  pass",
@@ -492,7 +503,210 @@ User Input
 
 ---
 
+## スキルの自動選択メカニズム
+
+### 自動選択とは
+
+ユーザーが **スキル名を明示しなくても**、Copilot エージェントが自動的に最適なスキルを選択・実行する機能。
+
+```
+【明示的指定】
+User: "analyze-code-quality スキルでこのコードを分析"
+  ↓ ユーザーが指定
+  → analyze-code-quality が実行
+
+【自動選択】
+User: "このコードの品質を分析してください"
+  ↓ Copilot が候補スキルから選択
+  → analyze-code-quality が実行（ユーザーは指定しない）
+```
+
+### 自動選択アルゴリズム
+
+```
+ユーザー入力：「このコード分析して」
+
+↓ Step 1: ユーザー意図の抽出
+
+Intent: "code_analysis"
+Parameters: { code: ..., context: "code quality" }
+
+↓ Step 2: スキル候補の検索
+
+すべてのスキルメタデータを検索：
+├─ analyze-code-quality  ← description: "コードの品質を分析"
+├─ generate-documentation
+├─ generate-unit-tests
+└─ ... その他のスキル
+
+↓ Step 3: 最適スキルのマッチング
+
+スコアリング：
+├─ analyze-code-quality  : 95点 ← 「品質」「分析」がヒット
+├─ generate-unit-tests   : 30点 ← その他のスキル
+└─ generate-documentation: 20点
+
+↓ Step 4: 最高スコアスキルを実行
+
+analyze-code-quality が選定 → 実行！
+
+↓ Result: 結果返却
+```
+
+### スキルメタデータの活用
+
+各スキルの **description** と **tags** が自動選択の鍵：
+
+```json
+{
+  "id": "analyze-code-quality",
+  "name": "コード品質分析",
+  "description": "Python, JavaScript, TypeScript, Java, Go のコードの品質を多次元的に分析し、改善提案を提供するスキル",
+  
+  "metadata": {
+    "category": "code-analysis",
+    "tags": [
+      "python", "javascript", "typescript", "java", "go",
+      "code-quality",
+      "code-review",
+      "team-productivity"
+    ]
+  }
+}
+```
+
+**ユーザー入力をこれらと照合：**
+
+| ユーザー入力 | マッチタグ | 結果 |
+|-----------|----------|------|
+| 「コード品質」 | "code-quality" ✓ | analyze-code-quality 選定 |
+| 「レビュー」 | "code-review" ✓ | analyze-code-quality 選定 |
+| 「テスト生成」 | "unit-test" ✓ | generate-unit-tests 選定 |
+| 「ドキュメント」 | "documentation" ✓ | generate-documentation 選定 |
+
+### マッチング戦略
+
+#### 戦略1: キーワード マッチング（シンプル）
+
+```
+ユーザー入力：「このコードの品質を分析してください」
+
+キーワード抽出：「品質」「分析」「コード」
+
+スキルのtags/description から検索：
+├─ "品質" → "code-quality" ✓
+├─ "分析" → "code-analysis" ✓
+└─ "コード" → 多くのスキルに該当
+
+最高スコア: analyze-code-quality
+```
+
+#### 戦略2: セマンティック マッチング（高度）
+
+```
+ユーザー入力をEmbedding化：
+  「このコードの品質を分析してください」
+  → [0.23, 0.87, 0.45, ..., 0.92]
+
+各スキルのdescription をEmbedding化：
+  
+  analyze-code-quality:
+    「コードの品質を多次元的に分析し、改善提案を提供」
+    → [0.22, 0.89, 0.43, ..., 0.94]  ← 類似度 97% ✓✓
+  
+  generate-unit-tests:
+    「テストコードを自動生成」
+    → [0.12, 0.34, 0.11, ..., 0.28]  ← 類似度 22%
+
+最高スコア: analyze-code-quality
+```
+
+### 自動選択の利点・課題
+
+#### 利点
+
+| 利点 | 効果 |
+|------|------|
+| **UX向上** | ユーザーがスキル名を覚える必要がない |
+| **生産性向上** | 入力が短く済む |
+| **一貫性** | 同じ意図には常に同じスキルが選ばれる |
+
+#### 課題と対策
+
+| 課題 | 対策 |
+|------|------|
+| **誤選択** | ユーザー提示時に「このスキルを使います」と確認 |
+| **複数候補同点** | ユーザーに選択肢を提示 |
+| **言語の揺らぎ** | セマンティック検索 + フォールバック |
+
+### 実装例（疑似コード）
+
+```python
+def auto_select_skill(user_input: str) -> Skill:
+    """ユーザー入力から最適なスキルを自動選択"""
+    
+    # Step 1: 意図抽出
+    intent = extract_intent(user_input)
+    
+    # Step 2: スキル候補を検索
+    all_skills = load_all_skills()
+    
+    # Step 3: マッチングスコアを計算
+    scores = {}
+    for skill in all_skills:
+        # キーワードマッチング
+        keyword_score = calculate_keyword_match(
+            user_input, 
+            skill.description, 
+            skill.tags
+        )
+        # セマンティックマッチング
+        semantic_score = calculate_semantic_similarity(
+            user_input,
+            skill.description
+        )
+        
+        # 総合スコア
+        scores[skill.id] = (
+            0.3 * keyword_score + 
+            0.7 * semantic_score
+        )
+    
+    # Step 4: 最高スコアスキルを返す
+    best_skill_id = max(scores, key=scores.get)
+    best_score = scores[best_skill_id]
+    
+    # Step 5: 信頼度チェック
+    if best_score < 0.6:  # 閾値以下なら確認を取る
+        return prompt_user_selection(scores)
+    
+    return load_skill(best_skill_id)
+
+
+# 使用例
+user_input = "このコードの品質を分析してください"
+skill = auto_select_skill(user_input)
+print(f"Selected: {skill.name}")  # → "Selected: コード品質分析"
+```
+
+### 複数スキルの組み合わせ
+
+```
+ユーザー入力：「コードを分析して、テストを生成して、ドキュメント書いて」
+
+自動選択結果：
+├─ Step 1: analyze-code-quality で分析
+├─ Step 2: generate-unit-tests でテスト生成
+└─ Step 3: generate-documentation でドキュメント生成
+
+このような "複合スキル" 実行可能
+（Part 5-1 参照: 複合スキルの詳細）
+```
+
+---
+
 ## エラーハンドリング
+
 
 ### エラーリトライ メカニズム
 
