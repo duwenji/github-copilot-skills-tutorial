@@ -22,17 +22,13 @@
 
 ## SKILL.md フォーマット（推奨）
 
-### ファイル：`.github/skills/doc-generator.md`
+### ファイル：`.github/skills/doc-generator/SKILL.md`
 
 ```markdown
 ---
-id: generate-documentation
-version: 1.0.0
-name: ドキュメント自動生成
-description: 関数・メソッド・クラスのDocstring を複数形式で自動生成します
-author: Documentation Engineers
-tags: [documentation, docstring, productivity, python, javascript, java, go]
-category: documentation
+name: doc-generator
+description: 関数・メソッド・クラスの Docstring を複数形式で自動生成します
+license: MIT
 ---
 
 # ドキュメント自動生成スキル

@@ -197,16 +197,13 @@ JSON Schema で定義：
 
 **SKILL.md フォーマットを使う場合（推奨）:**
 
-`.github/skills/code-quality-analyzer.md` を作成
+`.github/skills/code-quality-analyzer/SKILL.md` を作成
 
 ```markdown
 ---
-id: code-quality-analyzer
-version: 1.0.0
-name: コード品質分析
+name: code-quality-analyzer
 description: 提供されたコードの品質を多面的に分析します
-author: Your Team
-tags: [code-analysis, quality, review]
+license: MIT
 ---
 
 # コード品質分析スキル
@@ -490,26 +487,20 @@ Test Case 5: エッジケース - 無効な言語
 ### ステップ5-1: リポジトリへの登録
 
 ```
-ディレクトリ構成：
+GitHub公式推奨のディレクトリ構成：
 
-skills/
-├── definitions/
-│   └── analyze-code-quality.json      # スキル定義ファイル
-├── docs/
-│   └── analyze-code-quality/
-│       ├── README.md                   # 使用方法
-│       ├── examples.md                 # 使用例
-│       └── api-reference.md            # API リファレンス
-└── tests/
+.github/
+└── skills/
+    └── code-quality-analyzer/
+        └── SKILL.md                    # スキル定義ファイル（推奨形式）
+```
     └── analyze-code-quality-test.json # テストケース
 
 Git コマンド：
 
-git add skills/definitions/analyze-code-quality.json
-git add skills/docs/analyze-code-quality/
-git add skills/tests/analyze-code-quality-test.json
-git commit -m "Add skill: analyze-code-quality v1.0.0"
-git tag v1.0.0
+git add .github/skills/code-quality-analyzer/SKILL.md
+git add .github/skills/code-quality-analyzer/
+git commit -m "Add skill: code-quality-analyzer v1.0.0"
 git push origin main
 git push origin v1.0.0
 ```

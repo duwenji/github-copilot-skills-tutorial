@@ -23,17 +23,13 @@
 
 ## SKILL.md フォーマット（推奨）
 
-### ファイル：`.github/skills/test-generator.md`
+### ファイル：`.github/skills/test-generator/SKILL.md`
 
 ```markdown
 ---
-id: generate-unit-tests
-version: 1.0.0
-name: ユニットテスト自動生成
+name: test-generator
 description: 関数・メソッドのユニットテストコードを複数のテストフレームワーク形式で自動生成します
-author: QA and Testing Team
-tags: [testing, unit-test, pytest, jest, junit, quality-assurance]
-category: testing
+license: MIT
 ---
 
 # ユニットテスト自動生成スキル

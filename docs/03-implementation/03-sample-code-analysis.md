@@ -18,18 +18,13 @@
 
 ## SKILL.md フォーマット（推奨）
 
-### ファイル：`.github/skills/code-quality-analyzer.md`
+### ファイル：`.github/skills/code-quality-analyzer/SKILL.md`
 
 ```markdown
 ---
-id: analyze-code-quality
-version: 1.0.0
-name: コード品質分析
+name: code-quality-analyzer
 description: Python, JavaScript, TypeScript, Java, Go コードの品質を多次元的に分析し、改善提案を提供します
-author: Development Productivity Team
-tags: [python, javascript, typescript, java, go, code-quality, review]
-category: code-analysis
-documentation: https://docs.example.com/skills/code-quality
+license: MIT
 ---
 
 # コード品質分析スキル
@@ -202,9 +197,16 @@ def process_data(data):
 
 ## JSON フォーマット（参考：内部管理向け）
 
-### ファイル：`analyze-code-quality.json`
+⚠️ **注記**: 実装では SKILL.md フォーマット（上記）を使用してください。JSON形式はシステム内部管理向けの参考情報です。
 
-ファイルパス：`skills/definitions/analyze-code-quality.json`
+### 参考：内部API形式
+
+従来のJSON APIフォーマットは以下の様に構造化されていますが、新規実装では SKILL.md 形式を推奨します：
+
+```json
+{
+  "id": "code-quality-analyzer",
+  "name": "code-quality-analyzer",
 
 ```json
 {

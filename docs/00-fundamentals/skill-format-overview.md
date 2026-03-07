@@ -5,9 +5,48 @@
 GitHub公式が推奨する **Agent Skills** の実装形式は **`SKILL.md`**です。  
 このドキュメントでは、2つの形式の経緯、関係性、そして各々の利用場面と使い分けを説明します。
 
+### 🎓 Agent Skills はオープンスタンダード
+
+**重要**: Agent Skills は Anthropic による**オープンスタンダード**です。プロプライエタリ仕様ではなく、複数のプラットフォームで活用できるように設計されています。
+
+| 側面 | 説明 |
+|-----|------|
+| **標準化主体** | Anthropic（Claude 開発元） |
+| **公開仕様** | https://agentskills.io/ |
+| **参考実装** | https://github.com/anthropics/skills |
+| **コミュニティ** | GitHub Awesome Copilot、その他 |
+| **ライセンス** | MIT など自由なライセンスで公開可能 |
+
 ---
 
-## 📋 フォーマットの経緯
+## � サポートされるプラットフォーム
+
+Agent Skills は、以下の環境で利用できます：
+
+| プラットフォーム | ステータス | 説明 |
+|-------|--------|------|
+| **Copilot coding agent** | ✅ 利用可能 | GitHub.com の Copilot Editor で実行可能 |
+| **GitHub Copilot CLI** | ✅ 利用可能 | コマンドラインから `gh copilot` コマンドで実行 |
+| **VS Code Insiders** | ✅ プレビュー | VS Code Insiders 版で実験的にサポート |
+| **VS Code（stable）** | 🔜 近日対応 | 通常版 VS Code では近日リリース予定 |
+| **GitHub.com UI** | ✅ 利用可能 | GitHub.com のウェブインターフェースで実行 |
+
+### 今から始める場合の推奨環境
+
+```
+【最初の学習】
+→ GitHub.com の Copilot Editor（最も簡単）
+
+【CLI作業が多い場合】
+→ GitHub Copilot CLI
+
+【VS Code を主に使う場合】
+→ VS Code Insiders（安定版は近日リリース）
+```
+
+---
+
+## �📋 フォーマットの経緯
 
 ### バージョン進化
 

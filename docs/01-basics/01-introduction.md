@@ -8,6 +8,32 @@
 
 こうすることで、チーム全体で統一された作業フローと品質を保つことができます。
 
+### 📖 オープンスタンダード
+
+⚠️ **重要**: Agent Skills は **Anthropic が管理するオープンスタンダード** です。
+
+```
+Agent Skills = Anthropic のオープンスタンダード
+         ↓
+    GitHub Copilot, GitHub Copilot CLI, Claude など
+    複数のプラットフォームで利用可能
+```
+
+- **公式ドキュメント**: https://agentskills.io/
+- **オープンソース参考実装**: https://github.com/anthropics/skills
+- **コミュニティ**: [Awesome Copilot](https://github.com/github/awesome-copilot) - コミュニティスキル集
+
+### 利用可能なプラットフォーム
+
+- ✅ GitHub.com（Copilot Editor）
+- ✅ GitHub Copilot CLI
+- ✅ VS Code Insiders（プレビュー）
+- 🔜 VS Code（近日対応）
+
+詳細は [README: サポートされるプラットフォーム](../../README.md#サポートされるプラットフォーム)を参照。
+
+---
+
 ## Agent Skillsが解決する課題
 
 ### 課題1: 毎回同じプロンプトを書く手間
