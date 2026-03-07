@@ -1,6 +1,6 @@
 # Part 3-3: サンプルスキル #1 - コード品質分析
 
-このセクションでは、**実際に使用できる完全なコード分析スキル** を実装します。
+このセクションでは、**実際に使用できる完全なコード分析スキル** を SKILL.md フォーマットで実装します。
 
 ---
 
@@ -10,12 +10,197 @@
 スキル名：analyze-code-quality
 目的：Python, JavaScript, TypeScript, Java, Go のコードの品質を分析
 難度：★★☆☆☆（初級）
-実装時間：1-2時間
+実装時間：30分～1時間
+推奨フォーマット：SKILL.md
 ```
 
 ---
 
-## スキル定義ファイル（完全版）
+## SKILL.md フォーマット（推奨）
+
+### ファイル：`.github/skills/code-quality-analyzer.md`
+
+```markdown
+---
+id: analyze-code-quality
+version: 1.0.0
+name: コード品質分析
+description: Python, JavaScript, TypeScript, Java, Go コードの品質を多次元的に分析し、改善提案を提供します
+author: Development Productivity Team
+tags: [python, javascript, typescript, java, go, code-quality, review]
+category: code-analysis
+documentation: https://docs.example.com/skills/code-quality
+---
+
+# コード品質分析スキル
+
+## 概要
+
+このスキルはあなたが提供するコードを以下の観点から分析します：
+
+- **可読性**: 変数名、関数名、コメント、構造化の質
+- **パフォーマンス**: 非効率なアルゴリズム、無駄なループ、メモリ使用量
+- **セキュリティ**: 潜在的な脆弱性、入力検証、認証・認可の問題
+- **テスト可能性**: 単位テスト作成の容易さ、依存性注入の対応
+
+## 使い方
+
+1. VS Code でコードを選択
+2. Copilot に「コード品質分析スキルを実行」と指示
+3. 結果が統一フォーマットで表示されます
+
+## パラメータ
+
+### code_snippet (必須)
+分析対象のコード（1～5000文字）
+
+### language (必須)
+プログラミング言語を指定
+- `python`
+- `javascript`  
+- `typescript`
+- `java`
+- `go`
+
+### focusAreas (オプション)
+重点分析エリアをカンマ区切りで指定（複数選択可）
+- `readability`
+- `performance`
+- `security`
+- `testability`
+
+デフォルト: すべてのエリアを分析
+
+### detailLevel (オプション)
+結果の詳細度レベル
+- `basic`: 主要な問題のみ
+- `detailed`: 詳細な分析と複数の改善提案
+
+デフォルト: `detailed`
+
+## 出力フォーマット
+
+```json
+{
+  "overallScore": 85,
+  "scoreRanges": {
+    "readability": 90,
+    "performance": 78,
+    "security": 85,
+    "testability": 82
+  },
+  "categories": [
+    {
+      "name": "Readability",
+      "score": 90,
+      "issues": [
+        {
+          "severity": "MEDIUM",
+          "issue": "変数名 'x' は不明確",
+          "suggestion": "変数を 'user_age' に改名",
+          "example": "age = user.get_age()  # 変更前\nuser_age = user.get_age()  # 変更後"
+        }
+      ]
+    },
+    {
+      "name": "Performance",
+      "score": 78,
+      "issues": [...]
+    },
+    {
+      "name": "Security", 
+      "score": 85,
+      "issues": [...]
+    },
+    {
+      "name": "Testability",
+      "score": 82,
+      "issues": [...]
+    }
+  ],
+  "summary": "全体的に質の高いコードです...",
+  "recommendations": [
+    "型ヒントを追加してテスト容易性を向上させる",
+    "ユーザー入力の検証をより厳密に..."
+  ]
+}
+```
+
+## 実装例
+
+### Example 1: Python コード分析
+
+入力:
+```python
+def process_data(data):
+    for i in range(len(data)):
+        x = data[i]
+        # process x
+        print(x * 2)
+    return None
+```
+
+期待される出力:
+```json
+{
+  "overallScore": 62,
+  "categories": [
+    {
+      "name": "Readability",
+      "score": 60,
+      "issues": [
+        {
+          "severity": "HIGH",
+          "issue": "関数名 'process_data' は曖昧",
+          "suggestion": "動作を反映した名前に変更（例: convert_items_to_doubled, log_data_values）"
+        },
+        {
+          "severity": "MEDIUM",
+          "issue": "変数名 'x' は不適切",
+          "suggestion": "'item', 'value', 'data_point' など意味のある名前を使用"
+        }
+      ]
+    },
+    {
+      "name": "Performance",
+      "score": 55,
+      "issues": [
+        {
+          "severity": "HIGH",
+          "issue": "for i in range(len(data)) はPython的でない",
+          "suggestion": "enumerate() または直接イテレーション使用:\nfor item in data:\n    print(item * 2)"
+        }
+      ]
+    },
+    {
+      "name": "Security",
+      "score": 80,
+      "issues": []
+    },
+    {
+      "name": "Testability",
+      "score": 70,
+      "issues": [
+        {
+          "severity": "MEDIUM",
+          "issue": "戻り値が常に None で結果を返していない",
+          "suggestion": "処理結果を返すように修正して単位テスト可能にする"
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    "for ループを Pythonic に書き直す",
+    "関数から結果を返す",
+    "型ヒントを追加する",
+    "docstring を追加する"
+  ]
+}
+```
+
+---
+
+## JSON フォーマット（参考：内部管理向け）
 
 ### ファイル：`analyze-code-quality.json`
 

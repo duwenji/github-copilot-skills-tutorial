@@ -1,8 +1,8 @@
 # Part 3-5: サンプルスキル #3 - テスト生成【応用的なスキル】
 
-このセクションでは、**関数・メソッドのテストコードを自動生成するスキル** を実装します。
+このセクションでは、**関数・メソッドのユニットテストコードを自動生成するスキル** を SKILL.md フォーマットで実装します。
 
-難度は最も高く、複数のテストフレームワーク対応、複数ファイル出力を含みます。
+難度は最も高く、複数のテストフレームワーク対応、複数ケース生成を含みます。
 
 ---
 
@@ -12,15 +12,222 @@
 スキル名：generate-unit-tests
 目的：ユニットテストコードを自動生成
 難度：★★★★☆（上級）
-実装時間：3-4時間
+実装時間：1～2時間
 対応言語：Python, JavaScript/TypeScript, Java, Go
 対応フレームワーク：pytest, unittest, Jest, Mocha, JUnit, Go testing
-特徴：複数テストケースを複数ファイルで出力
+特徴：正常系・異常系・エッジケースをカバー
+推奨形式：SKILL.md
 ```
 
 ---
 
-## スキル定義ファイル（完全版）
+## SKILL.md フォーマット（推奨）
+
+### ファイル：`.github/skills/test-generator.md`
+
+```markdown
+---
+id: generate-unit-tests
+version: 1.0.0
+name: ユニットテスト自動生成
+description: 関数・メソッドのユニットテストコードを複数のテストフレームワーク形式で自動生成します
+author: QA and Testing Team
+tags: [testing, unit-test, pytest, jest, junit, quality-assurance]
+category: testing
+---
+
+# ユニットテスト自動生成スキル
+
+## 概要
+
+このスキルは以下のテスト種別をカバーしたユニットテストを自動生成します：
+
+- **正常系テスト**: 期待される入力に対する結果の検証
+- **境界値テスト**: 最小値・最大値・境界条件の検証
+- **異常系テスト**: エラーハンドリング、例外発生の検証
+- **エッジケーステスト**: null、空配列など特殊な入力の検証
+
+対応するテストフレームワーク：
+- **Python**: pytest、unittest
+- **JavaScript/TypeScript**: Jest、Mocha + Chai
+- **Java**: JUnit 4/5
+- **Go**: Go testing
+
+## 使い方
+
+1. 関数またはメソッド定義を選択
+2. Copilot に「ユニットテスト自動生成スキルを実行」と指示
+3. テストコードが選択したフレームワーク形式で生成されます
+
+## パラメータ
+
+### codeSnippet (必須)
+テスト対象のコード（関数またはクラスメソッド）
+- 5～200 行まで対応
+
+### language (必須)
+ソースコード言語
+- `python`
+- `javascript`
+- `typescript`
+- `java`
+- `go`
+
+### testFramework (必須)
+使用するテストフレームワーク
+- Python: `pytest` / `unittest`
+- JS/TS: `jest` / `mocha`
+- Java: `junit4` / `junit5`
+- Go: `testing`
+
+### coverageTarget (オプション)
+テストカバレッジ目標（%）
+- デフォルト: `80`
+- 範囲: 50～100
+
+### includeDocumentation (オプション)
+テストコード内にコメント・説明を含めるか
+- `true`: 含める（学習向け）
+- `false`: 含めない（本番向け）
+
+デフォルト: `true`
+
+## 出力フォーマット
+
+```json
+{
+  "testCode": "...",
+  "framework": "pytest|jest|junit|testing",
+  "language": "...",
+  "testCases": [
+    {
+      "name": "test_normal_case_1",
+      "type": "normal|boundary|error|edge",
+      "description": "..." 
+    }
+  ],
+  "estimatedCoverage": 0.85,
+  "runInstructions": "pytest test_function.py -v",
+  "suggestions": [
+    "統合テストの追加を検討してください",
+    "パフォーマンステストの追加をお勧めします"
+  ]
+}
+```
+
+## 実装例
+
+### Example 1: Python 関数（pytest）
+
+入力コード:
+```python
+def divide(a, b):
+    if b == 0:
+        raise ValueError("0で除算することはできません")
+    return a / b
+```
+
+生成されるテストコード:
+```python
+import pytest
+from math_utils import divide
+
+class TestDivide:
+    """divide 関数のテストスイート"""
+    
+    def test_normal_case_positive_numbers(self):
+        """正常系: 正の数同士の除算"""
+        assert divide(10, 2) == 5.0
+        assert divide(7, 2) == 3.5
+    
+    def test_normal_case_negative_numbers(self):
+        """正常系: 負の数を含む除算"""
+        assert divide(-10, 2) == -5.0
+        assert divide(10, -2) == -5.0
+        assert divide(-10, -2) == 5.0
+    
+    def test_boundary_case_zero_numerator(self):
+        """境界値: 分子が 0"""
+        assert divide(0, 5) == 0.0
+    
+    def test_boundary_case_small_denominator(self):
+        """境界値: 分母が 1"""
+        assert divide(42, 1) == 42.0
+    
+    def test_error_case_zero_denominator(self):
+        """異常系: 分母が 0（例外発生）"""
+        with pytest.raises(ValueError):
+            divide(10, 0)
+    
+    def test_error_case_invalid_type_numerator(self):
+        """異常系: 分子が数値でない"""
+        with pytest.raises(TypeError):
+            divide("10", 2)
+    
+    def test_edge_case_float_division(self):
+        """エッジケース: 浮動小数点演算"""
+        result = divide(1, 3)
+        assert abs(result - 0.333333) < 0.0001
+```
+
+### Example 2: JavaScript 関数（Jest）
+
+入力コード:
+```javascript
+function fetchUserData(userId) {
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+    return api.get(`/users/${userId}`);
+}
+```
+
+生成されるテストコード:
+```javascript
+import { fetchUserData } from './userService';
+import * as api from './api';
+
+jest.mock('./api');
+
+describe('fetchUserData', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+    
+    test('正常系: 有効なユーザーIDでデータを取得', async () => {
+        const userData = { id: '123', name: 'John Doe' };
+        api.get.mockResolvedValue(userData);
+        
+        const result = await fetchUserData('123');
+        
+        expect(result).toEqual(userData);
+        expect(api.get).toHaveBeenCalledWith('/users/123');
+    });
+    
+    test('異常系: ユーザーID未指定で例外発生', () => {
+        expect(() => fetchUserData(null)).toThrow('User ID is required');
+        expect(() => fetchUserData('')).toThrow('User ID is required');
+    });
+    
+    test('異常系: API呼び出し失敗時のエラーハンドリング', async () => {
+        api.get.mockRejectedValue(new Error('API Error'));
+        
+        await expect(fetchUserData('123')).rejects.toThrow('API Error');
+    });
+    
+    test('境界値: 最小限のユーザーIDでリクエスト', async () => {
+        api.get.mockResolvedValue({});
+        
+        await fetchUserData('a');
+        
+        expect(api.get).toHaveBeenCalledWith('/users/a');
+    });
+});
+```
+
+---
+
+## JSON フォーマット（参考：内部管理向け）
 
 ```json
 {

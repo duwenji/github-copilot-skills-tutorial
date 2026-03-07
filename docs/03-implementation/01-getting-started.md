@@ -178,7 +178,70 @@ JSON Schema で定義：
 
 ## Phase 3: 実装
 
+### ℹ️ フォーマット選択ガイド
+
+スキルを実装する方法は **2 つ** あります：
+
+| 項目 | SKILL.md（推奨）| JSON（高度）|
+|------|-----|-----|
+| **形式** | Markdown + YAML | JSON |
+| **保存場所** | `.github/skills/SKILL.md` | API層/内部管理 |
+| **推奨対象** | ほぼすべての開発者 | システム開発者・複雑なケース |
+| **学習パス** | Part 0 を確認 | このセクションを続行 |
+
+👉 **初めてなら [Part 0: スキル形式の理解](../../00-fundamentals/skill-format-overview.md) で SKILL.md フォーマットを学んでください。**
+
+---
+
 ### ステップ3-1: スキル定義ファイルの骨組みを作成
+
+**SKILL.md フォーマットを使う場合（推奨）:**
+
+`.github/skills/code-quality-analyzer.md` を作成
+
+```markdown
+---
+id: code-quality-analyzer
+version: 1.0.0
+name: コード品質分析
+description: 提供されたコードの品質を多面的に分析します
+author: Your Team
+tags: [code-analysis, quality, review]
+---
+
+# コード品質分析スキル
+
+## 概要
+このスキルでコード品質を以下の観点から分析します：
+- 可読性
+- パフォーマンス
+- セキュリティ
+- テスト可能性
+
+## 使い方
+
+コードを選択してスキルを実行してください。
+
+## パラメータ
+
+### code_snippet (必須)
+分析対象のコード
+
+### language (必須)  
+プログラミング言語: python, javascript, typescript, java, go
+
+### focusAreas (オプション)
+重点分析エリア（カンマ区切り）
+デフォルト: readability,performance,security,testability
+
+### detailLevel (オプション)
+結果の詳細度: basic / detailed
+デフォルト: detailed
+```
+
+---
+
+**JSON フォーマットを使う場合（内部管理向け）:**
 
 ```json
 {

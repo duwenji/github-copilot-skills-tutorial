@@ -1,6 +1,6 @@
 # Part 3-4: サンプルスキル #2 - ドキュメント自動生成
 
-このセクションでは、**コードのドキュメント（docstring）を自動生成するスキル** を実装します。
+このセクションでは、**コード内のDocstring を自動生成するスキル** を SKILL.md フォーマットで実装します。
 
 難度は Part 3-3 より少し高く、複数の出力フォーマット対応です。
 
@@ -12,14 +12,196 @@
 スキル名：generate-documentation
 目的：関数・クラスのドキュメント（docstring）を自動生成
 難度：★★★☆☆（中級）
-実装時間：2-3時間
+実装時間：1～1.5時間
 対応言語：Python, JavaScript/TypeScript, Java, Go
 対応フォーマット：Google Style, NumPy Style, JSDoc, JavaDoc
+推奨形式：SKILL.md
 ```
 
 ---
 
-## スキル定義ファイル（完全版）
+## SKILL.md フォーマット（推奨）
+
+### ファイル：`.github/skills/doc-generator.md`
+
+```markdown
+---
+id: generate-documentation
+version: 1.0.0
+name: ドキュメント自動生成
+description: 関数・メソッド・クラスのDocstring を複数形式で自動生成します
+author: Documentation Engineers
+tags: [documentation, docstring, productivity, python, javascript, java, go]
+category: documentation
+---
+
+# ドキュメント自動生成スキル
+
+## 概要
+
+このスキルは以下の種類のドキュメント（Docstring）を自動生成します：
+
+- **Google Style**: Python で一般的
+- **NumPy Style**: 科学計算向け
+- **JSDoc**: JavaScript/TypeScript 向け
+- **JavaDoc**: Java 向け
+- **Go Doc**: Go 向け
+
+生成されるドキュメントは：
+- 関数の目的を明確に説明
+- パラメータの型と説明を記載
+- 戻り値の説明
+- 使用例（オプション）
+- 例外情報（該当時）
+
+## 使い方
+
+1. 関数またはクラスを選択
+2. Copilot に「ドキュメント自動生成スキルを実行」と指示
+3. 選択したドキュメント形式で Docstring が生成されます
+
+## パラメータ
+
+### codeSnippet (必須)
+ドキュメント対象のコード（関数またはクラス）
+- 5～500 行
+
+### language (必須)
+ソースコード言語
+- `python`
+- `javascript`
+- `typescript`
+- `java`
+- `go`
+
+### docStyle (必須)
+ドキュメント形式
+- `google`: Google 形式（Python 推奨）
+- `numpy`: NumPy 形式（科学計算向け）
+- `jsdoc`: JSDoc 形式（JavaScript/TypeScript）
+- `javadoc`: JavaDoc 形式（Java）
+- `godoc`: Go Doc 形式（Go）
+
+### includeExamples (オプション)
+使用例を含めるか
+- `true`: 含める（詳細）
+- `false`: 含めない（簡潔）
+
+デフォルト: `true`
+
+### includeTypeHints (オプション)
+型ヒント情報を含めるか
+- `true`: 含める
+- `false`: 含めない
+
+デフォルト: `true`
+
+## 出力フォーマット
+
+```json
+{
+  "generatedDocstring": "...",
+  "format": "google|numpy|jsdoc|javadoc|godoc",
+  "language": "...",
+  "insertionPoint": {
+    "lineNumber": 5,
+    "position": "above|inside"
+  },
+  "estimatedReadabilityIncrease": 0.25,
+  "suggestions": [
+    "より詳細な説明を追加できます",
+    "例外処理について記載することをお勧めします"
+  ]
+}
+```
+
+## 実装例
+
+### Example 1: Python 関数（Google Style）
+
+入力コード:
+```python
+def calculate_average(numbers):
+    total = sum(numbers)
+    return total / len(numbers)
+```
+
+生成される Docstring:
+```python
+def calculate_average(numbers):
+    """
+    数値リストの平均値を計算します。
+    
+    Args:
+        numbers (list): 数値のリスト。最低でも1つの要素が必要です。
+        
+    Returns:
+        float: 計算された平均値。
+        
+    Raises:
+        ValueError: リストが空の場合。
+        TypeError: 数値以外の値がリストに含まれている場合。
+        
+    Examples:
+        >>> calculate_average([1, 2, 3, 4, 5])
+        3.0
+        >>> calculate_average([10, 20])
+        15.0
+    """
+    if not numbers:
+        raise ValueError("リストは空にできません")
+    total = sum(numbers)
+    return total / len(numbers)
+```
+
+### Example 2: TypeScript クラス（JSDoc）
+
+入力コード:
+```typescript
+class UserService {
+    constructor(database) {
+        this.database = database;
+    }
+    
+    async getUserById(id) {
+        return this.database.query('users', id);
+    }
+}
+```
+
+生成される JSDoc:
+```typescript
+/**
+ * ユーザー情報を管理するサービスクラス
+ * @class UserService
+ */
+class UserService {
+    /**
+     * UserService を初期化します
+     * @param {Database} database - データベースインスタンス
+     */
+    constructor(database) {
+        this.database = database;
+    }
+    
+    /**
+     * ID でユーザーを取得します
+     * @async
+     * @param {string} id - ユーザー ID
+     * @returns {Promise<User>} ユーザーオブジェクト
+     * @throws {Error} ユーザーが見つからない場合
+     * @example
+     * const user = await userService.getUserById('user123');
+     */
+    async getUserById(id) {
+        return this.database.query('users', id);
+    }
+}
+```
+
+---
+
+## JSON フォーマット（参考：内部管理向け）
 
 ```json
 {
