@@ -212,6 +212,109 @@ output_format: markdown
 
 ---
 
+## シリーズ管理構造の実装例
+
+複数のクイズセットを **1つのシリーズ** として段階的に学習できるように構成する場合、`parentId`, `group`, `level` フィールドを使用します。
+
+### シリーズ構造の例
+
+```
+📚 GitHub Copilot Skills チュートリアル（親セット）
+ ├─ 📖 Part 0: スキル形式の理解
+ ├─ 🎯 Part 1: Agent Skills 基礎
+ ├─ 📊 Part 2: 他技術との比較
+ ├─ ⚙️ Part 3: 実装編
+ ├─ 🚀 Part 4: 活用戦略
+ └─ 🏆 Part 5: 高度な活用
+```
+
+### metadata.json での実装
+
+**親セット（Level 1）**：
+```json
+{
+  "id": "github-copilot-skills-tutorial",
+  "name": "GitHub Copilot Skills チュートリアル",
+  "description": "GitHub Copilot Agent Skills の完全学習ガイド。基礎から応用まで段階的に学べるシリーズ",
+  "category": "Agent Skills",
+  "icon": "🎓",
+  "questionCount": 84,
+  "difficulty": "beginner to advanced",
+  "dataPath": null,
+  "parentId": null,
+  "group": "github-copilot-skills-tutorial-series",
+  "level": 1,
+  "order": 3
+}
+```
+
+**子セット（Level 2）- 複数の例**：
+
+```json
+{
+  "id": "spa-quiz-app-skill-format-overview",
+  "name": "スキル形式の理解 - 初級クイズ",
+  "description": "Agent Skills の基本概念、SKILL.md 形式とは何か、スキル配置場所、サポートプラットフォームを理解する初級向けクイズセット。Part 0 をカバー",
+  "category": "Agent Skills",
+  "icon": "📚",
+  "questionCount": 5,
+  "difficulty": "beginner",
+  "dataPath": "path/to/skill-format-overview.json",
+  "parentId": "github-copilot-skills-tutorial",
+  "group": "github-copilot-skills-tutorial-series",
+  "level": 2,
+  "order": 4,
+  "estimatedLearningTime": "5-8分",
+  "topics": ["Agent Skills のオープンスタンダード", "SKILL.md 形式の特徴", ...]
+}
+```
+
+```json
+{
+  "id": "spa-quiz-app-agent-skills-basics",
+  "name": "Agent Skills 基礎クイズセット",
+  "description": "GitHub Copilot Agent Skills の基礎概念、従来のプロンプト手法との違い、スキルの仕組みを理解するためのクイズセット。Part 1-1, 1-2, 1-3 全体をカバー",
+  "category": "Agent Skills",
+  "icon": "🎯",
+  "questionCount": 15,
+  "difficulty": "intermediate",
+  "dataPath": "path/to/agent-skills-basics.json",
+  "parentId": "github-copilot-skills-tutorial",
+  "group": "github-copilot-skills-tutorial-series",
+  "level": 2,
+  "order": 5,
+  "estimatedLearningTime": "20-25分",
+  "topics": ["Agent Skills の定義", "スキルの構成要素", ...]
+}
+```
+
+### シリーズ管理のキーポイント
+
+| フィールド | Level 1（親セット） | Level 2（子セット） | 説明 |
+|----------|------------------|------------------|------|
+| `parentId` | `null` | 親セットのID | 階層関係の定義 |
+| `group` | `"github-copilot-skills-tutorial-series"` | 同じ値 | シリーズグループの識別 |
+| `level` | `1` | `2` | 階層レベル |
+| `dataPath` | `null` | クイズデータのパス | 親セットはデータを持たない |
+| `questionCount` | 子セットの合計 | 各セットの問題数 | 親セットは子セットの総計 |
+| `order` | 表示順序 | 子セット毎の順序 | 同一グループ内での並び順 |
+
+### UI での表現例
+
+この構造により、SPA フロントエンドは以下のように表現できます：
+
+```
+▼ GitHub Copilot Skills チュートリアル [84問] 🎓 beginner to advanced
+  ├─ スキル形式の理解 [5問] 📚 beginner
+  ├─ Agent Skills 基礎 [15問] 🎯 intermediate
+  ├─ 他技術との比較 [20問] 📊 intermediate to advanced
+  ├─ 実装編 [23問] ⚙️ advanced
+  ├─ 活用戦略 [23問] 🚀 advanced
+  └─ 高度な活用 [18問] 🏆 advanced
+```
+
+---
+
 ## 品質基準
 
 生成されるクイズセットは以下の品質基準を満たします：
