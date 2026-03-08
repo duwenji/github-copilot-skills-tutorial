@@ -1,0 +1,388 @@
+{
+  "section": {
+    "id": "fundamentals",
+    "name": "スキル形式の理解",
+    "difficulty": "intermediate",
+    "estimatedTime": "25 minutes"
+  },
+  "quizzes": [
+    {
+      "id": "fund_001",
+      "question": "GitHub Copilot Agent Skills はどのような特性を持つスタンダードですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "GitHub のみが管理するプロプライエタリ仕様中心"
+        },
+        {
+          "id": "B",
+          "text": "Anthropic が管理するオープンスタンダードで、複数のプラットフォームで利用可能",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "Microsoft が開発し、VS Code 専用のスタンダード"
+        },
+        {
+          "id": "D",
+          "text": "各企業が独立して開発した技術の集約"
+        }
+      ],
+      "explanation": "Agent Skills は Anthropic によるオープンスタンダードで、GitHub Copilot、GitHub Copilot CLI、VS Code など複数プラットフォームで利用できます。"
+    },
+    {
+      "id": "fund_002",
+      "question": "SKILL.md 形式と JSON 形式の主な用途の違いは何ですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "SKILL.md はテスト用、JSON はプロダクション用"
+        },
+        {
+          "id": "B",
+          "text": "SKILL.md はエンドユーザー向け（読み書き）、JSON はシステム向け（内部通信・検証）",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "JSON はセキュリティが強く、SKILL.md は開発レベル"
+        },
+        {
+          "id": "D",
+          "text": "用途の違いはなく、どちらを選んでも同じ結果になる"
+        }
+      ],
+      "explanation": "SKILL.md は開発者が読み書きする Markdown 形式で .github/skills に保存されます。JSON は SKILL.md 内容を構造化し、システムが検証・処理する形式です。"
+    },
+    {
+      "id": "fund_003",
+      "question": "2026年現在で VS Code（stable）では Agent Skills はどのような状態ですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "完全にサポートされている",
+          "isCorrect": false
+        },
+        {
+          "id": "B",
+          "text": "プレビュー版として実験的にサポート",
+          "isCorrect": false
+        },
+        {
+          "id": "C",
+          "text": "近日対応予定",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "今後対応しない予定"
+        }
+      ],
+      "explanation": "VS Code（安定版）では Agent Skills は近日リリース予定です。VS Code Insiders ではプレビューとして利用可能です。"
+    },
+    {
+      "id": "fund_004",
+      "question": "SKILL.md 形式が従来の JSON API ベース形式に代わって採用された主な理由は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "JSON より処理が高速である"
+        },
+        {
+          "id": "B",
+          "text": "セキュリティ面で JSON より優れている"
+        },
+        {
+          "id": "C",
+          "text": "Markdown は開発者にとって自然で、バージョン管理との親和性が高い",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "ストレージ容量の節約ができる"
+        }
+      ],
+      "explanation": "SKILL.md はユーザビリティ、可読性、Git との親和性、コラボレーションの容易さから採用されました。"
+    },
+    {
+      "id": "fund_005",
+      "question": "Agent Skills が「オープンスタンダード」である利点を最も適切に説明しているのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "すべてのツールが無料で利用できる"
+        },
+        {
+          "id": "B",
+          "text": "特定のベンダーに依存せず、複数プラットフォームで利用・移植可能",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "コードをすべて公開する義務がある"
+        },
+        {
+          "id": "D",
+          "text": "誰でも自由に改変してプロプライエタリ版を販売できる"
+        }
+      ],
+      "explanation": "オープンスタンダードは特定ベンダーに依存せず、複数プラットフォーム（GitHub Copilot、Claude など）で利用可能です。"
+    },
+    {
+      "id": "fund_006",
+      "question": "GitHub.com の Copilot Editor が初心者向すすめられる理由は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "最も高機能である"
+        },
+        {
+          "id": "B",
+          "text": "環境セットアップが不要で、ウェブブラウザですぐに試始められる",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "最も安全である"
+        },
+        {
+          "id": "D",
+          "text": "他のプラットフォームより高速である"
+        }
+      ],
+      "explanation": "Copilot Editor は GitHub.com で直接利用でき、ローカル環境のセットアップが不要なため、最も始めやすいプラットフォームです。"
+    },
+    {
+      "id": "fund_007",
+      "question": "SKILL.md ファイルの格納場所の標準的なパスは次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "src/skills/SKILL.md"
+        },
+        {
+          "id": "B",
+          "text": ".skills/SKILL.md"
+        },
+        {
+          "id": "C",
+          "text": ".github/skills/SKILL.md",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "skills/SKILL.md"
+        }
+      ],
+      "explanation": ".github/skills/SKILL.md が標準的な格納位置です。この構造により、GitHub が自動的にスキルを検出できます。"
+    },
+    {
+      "id": "fund_008",
+      "question": "Agent Skills のライセンスについて、最も正確な説明はどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "MIT のみが利用可能"
+        },
+        {
+          "id": "B",
+          "text": "ライセンスは指定されない"
+        },
+        {
+          "id": "C",
+          "text": "自由なライセンス（MIT 等）で公開可能",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "GPL に制限されている"
+        }
+      ],
+      "explanation": "Agent Skills はオープンスタンダードなため、MIT など自由なライセンスで公開可能です。"
+    },
+    {
+      "id": "fund_009",
+      "question": "Copilot Editor、Copilot CLI、VS Code に共通する点は何ですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "すべて Copilot の同じバージョンを使う"
+        },
+        {
+          "id": "B",
+          "text": "Agent Skills で定義されたスキルを実行可能",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "GitHub リポジトリへの連携が必須"
+        },
+        {
+          "id": "D",
+          "text": "API キーの設定が必須"
+        }
+      ],
+      "explanation": "これらのプラットフォームはすべて Agent Skills のスキル定義を利用して、同じスキルを実行できます。"
+    },
+    {
+      "id": "fund_010",
+      "question": "Agent Skills 仕様の公開場所として正しいのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "github.com/github/copilot"
+        },
+        {
+          "id": "B",
+          "text": "agentskills.io",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "support.github.com"
+        },
+        {
+          "id": "D",
+          "text": "anthropic.com/skills"
+        }
+      ],
+      "explanation": "agentskills.io が Agent Skills の公式仕様サイトです。参考実装は GitHub (github.com/anthropics/skills) で公開されています。"
+    },
+    {
+      "id": "fund_011",
+      "question": "SKILL.md 形式が採用される以前は、Agent Skills はどのような形式で定義されていましたか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "YAML のみ"
+        },
+        {
+          "id": "B",
+          "text": "JSON API ベース",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "XML フォーマット"
+        },
+        {
+          "id": "D",
+          "text": "SQL データベース"
+        }
+      ],
+      "explanation": "2024年 Q3-Q4 のパイロット版では JSON API ベースの形式が使われていました。2025年 Q1 以降 SKILL.md に移行しました。"
+    },
+    {
+      "id": "fund_012",
+      "question": "Agent Skills を「オープンスタンダード」と呼ぶ根拠として誤っているものはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "Anthropic が管理している",
+          "isCorrect": false
+        },
+        {
+          "id": "B",
+          "text": "複数のプラットフォームで利用可能"
+        },
+        {
+          "id": "C",
+          "text": "GitHub が単独で開発した仕様である",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "仕様が公開されている"
+        }
+      ],
+      "explanation": "Agent Skills は GitHub ではなく Anthropic によるオープンスタンダードです。GitHub Copilot はこれを採用する複数プラットフォームの一つです。"
+    },
+    {
+      "id": "fund_013",
+      "question": "Markdown フォーマット（SKILL.md）が Git との親和性が優れている理由は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "Markdown ファイルは圧縮率が高い"
+        },
+        {
+          "id": "B",
+          "text": "テキストベースで変更差分が人間が読める形で記録される",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "Git の容量ライムが increased される"
+        },
+        {
+          "id": "D",
+          "text": "Markdown は Git でのみ扱える形式"
+        }
+      ],
+      "explanation": "Markdown はテキストベースなため、Git の diff が人間にとって読みやすく、変更履歴の追跡が直感的です。"
+    },
+    {
+      "id": "fund_014",
+      "question": "Agent Skills の実装フォーマットとして公式推奨なのは次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "JSON"
+        },
+        {
+          "id": "B",
+          "text": "YAML"
+        },
+        {
+          "id": "C",
+          "text": "SKILL.md",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "XML"
+        }
+      ],
+      "explanation": "SKILL.md が GitHub 公式推奨の形式です。JSON は「参考」扱いで、複雑なケースや内部管理用です。"
+    },
+    {
+      "id": "fund_015",
+      "question": "スキル形式の進化（2024-2026）で、最新の本番運用体制の特徴は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "SKILL.md と JSON の統合・同期メカニズムが確立",
+          "isCorrect": true
+        },
+        {
+          "id": "B",
+          "text": "JSON のみが標準に統一された"
+        },
+        {
+          "id": "C",
+          "text": "Markdown は非推奨に変更された"
+        },
+        {
+          "id": "D",
+          "text": "形式は固定化され、拡張できない"
+        }
+      ],
+      "explanation": "2026年 Q1 では SKILL.md（ユーザー向け）と JSON（内部通信）の両者を統合・同期するメカニズムが確立されました。"
+    }
+  ]
+}

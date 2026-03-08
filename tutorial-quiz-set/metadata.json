@@ -1,0 +1,73 @@
+{
+  "series": {
+    "id": "github-copilot-agent-skills",
+    "name": "GitHub Copilot Agent Skills チュートリアル",
+    "description": "GitHub Copilot Agent Skillsの基礎から実践的な活用までを学ぶ包括的なチュートリアル",
+    "version": "1.0.0",
+    "author": "GitHub Copilot Skills Tutorial",
+    "created": "2026-03-08",
+    "targetAudience": "intermediate",
+    "estimatedLearningTime": "8.5 hours"
+  },
+  "quizSets": [
+    {
+      "id": "fundamentals",
+      "order": 1,
+      "name": "スキル形式の理解",
+      "documentPath": "docs/00-fundamentals",
+      "description": "SKILL.md と JSON 形式の基本、オープンスタンダード、プラットフォームサポートについて学習",
+      "totalQuestions": 28,
+      "difficulty": "intermediate",
+      "estimatedTime": "25 minutes"
+    },
+    {
+      "id": "basics",
+      "order": 2,
+      "name": "Agent Skills の基礎",
+      "documentPath": "docs/01-basics",
+      "description": "Agent Skills とは何か、従来のプロンプト手法との違い、内部動作原理を習得",
+      "totalQuestions": 30,
+      "difficulty": "intermediate",
+      "estimatedTime": "28 minutes"
+    },
+    {
+      "id": "comparison",
+      "order": 3,
+      "name": "比較・メリット・デメリット",
+      "documentPath": "docs/02-comparison",
+      "description": "MCP および他の技術との比較、Agent Skills のメリット・デメリット、使いわけ",
+      "totalQuestions": 26,
+      "difficulty": "intermediate",
+      "estimatedTime": "24 minutes"
+    },
+    {
+      "id": "implementation",
+      "order": 4,
+      "name": "スキル構造と実装",
+      "documentPath": "docs/03-implementation",
+      "description": "スキル定義ファイルの構成要素、メタデータ、パラメータ設計、プロンプト構造",
+      "totalQuestions": 28,
+      "difficulty": "intermediate",
+      "estimatedTime": "26 minutes"
+    },
+    {
+      "id": "advanced",
+      "order": 5,
+      "name": "スキル管理とライフサイクル",
+      "documentPath": "docs/04-advanced",
+      "description": "スキルのライフサイクル管理、バージョニング、チームシェアリング、最適化",
+      "totalQuestions": 25,
+      "difficulty": "intermediate",
+      "estimatedTime": "23 minutes"
+    }
+  ],
+  "statistics": {
+    "totalQuestions": 137,
+    "totalEstimatedTime": "126 minutes",
+    "difficultyDistribution": {
+      "beginner": 0,
+      "intermediate": 137,
+      "advanced": 0
+    }
+  }
+}

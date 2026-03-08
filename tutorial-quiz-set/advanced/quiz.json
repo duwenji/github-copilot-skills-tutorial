@@ -1,0 +1,386 @@
+{
+  "section": {
+    "id": "advanced",
+    "name": "スキル管理とライフサイクル",
+    "difficulty": "intermediate",
+    "estimatedTime": "23 minutes"
+  },
+  "quizzes": [
+    {
+      "id": "adv_001",
+      "question": "スキルのライフサイクルに含まれる 5 つのステージを正しい順序で並べられるのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "Draft → Beta → Published → Mature → Deprecated",
+          "isCorrect": true
+        },
+        {
+          "id": "B",
+          "text": "Deprecated → Mature → Published → Beta → Draft"
+        },
+        {
+          "id": "C",
+          "text": "Published → Draft → Beta → Mature → Deprecated"
+        },
+        {
+          "id": "D",
+          "text": "Beta → Draft → Published → Mature → Deprecated"
+        }
+      ],
+      "explanation": "スキルは Draft（設計）→ Beta（テスト）→ Published（公開）→ Mature（成熟）→ Deprecated（廃止）の順に進みます。"
+    },
+    {
+      "id": "adv_002",
+      "question": "Draft ステージの期間と主な目的は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "期間：3-6ヶ月、目的：安定運用"
+        },
+        {
+          "id": "B",
+          "text": "期間：1-2週間、目的：スキル定義の完成",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "期間：6ヶ月-2年、目的：確立"
+        },
+        {
+          "id": "D",
+          "text": "期間：2-4週間、目的：品質検証"
+        }
+      ],
+      "explanation": "Draft ステージは 1-2 週間で完成を目指し、JSON スキーマ、プロンプト、基本テストを実装します。"
+    },
+    {
+      "id": "adv_003",
+      "question": "Draft ステージの成果物として不適切なのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "skill-definition.json"
+        },
+        {
+          "id": "B",
+          "text": "README.md（スキル説明）"
+        },
+        {
+          "id": "C",
+          "text": "test_cases.json（テストケース5個以上）"
+        },
+        {
+          "id": "D",
+          "text": "Production デプロイメント設定",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "Draft ステージではプロダクション環境へのデプロイメント設定は不要です。テスト完了後の Beta → Published で検討します。"
+    },
+    {
+      "id": "adv_004",
+      "question": "Draft ステージの出口基準で求められるテストケース数は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "1-2 個"
+        },
+        {
+          "id": "B",
+          "text": "5 個以上",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "10 個以上"
+        },
+        {
+          "id": "D",
+          "text": "テストケースは不要"
+        }
+      ],
+      "explanation": "Draft ステージの完成には、最低 5 個以上のテストケースがすべて成功することが出口基準です。"
+    },
+    {
+      "id": "adv_005",
+      "question": "Beta ステージの期間と主な活動は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "期間：2-4週間、目的：限定ユーザーグループによる品質検証とフィードバック",
+          "isCorrect": true
+        },
+        {
+          "id": "B",
+          "text": "期間：1-2週間、目的：完成"
+        },
+        {
+          "id": "C",
+          "text": "期間：3-6ヶ月、目的：大規模展開"
+        },
+        {
+          "id": "D",
+          "text": "期間：6ヶ月-2年、目的：廃止検討"
+        }
+      ],
+      "explanation": "Beta ステージは 2-4 週間かけて、限定的なユーザーグループ（5-10 人）によるテストとフィードバック収集を行います。"
+    },
+    {
+      "id": "adv_006",
+      "question": "Beta ステージでのベータユーザーの選定基準として最も適切なのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "全ユーザーに同時公開"
+        },
+        {
+          "id": "B",
+          "text": "ランダムに選定"
+        },
+        {
+          "id": "C",
+          "text": "スキルの用途領域に精通し、フィードバックを積極的に提供してくれる 5-10 人の限定グループ",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "ユーザー選定は不要"
+        }
+      ],
+      "explanation": "Beta テストの効果を最大化するには、該当分野の専門知識を持ち、フィードバックに協力的なユーザーを選定することが重要です。"
+    },
+    {
+      "id": "adv_007",
+      "question": "Published ステージでの「一般公開」とは次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "全ユーザーが無制限に利用可能"
+        },
+        {
+          "id": "B",
+          "text": "限定的なユーザーグループのみアクセス"
+        },
+        {
+          "id": "C",
+          "text": "リポジトリまたはマーケットプレイスで公開され、興味あるユーザーが利用開始可能",
+          "isCorrect": true
+        },
+        {
+          "id": "D",
+          "text": "スキルは廃止段階"
+        }
+      ],
+      "explanation": "Published は Beta テスト完了後、リポジトリで公開され、興味のあるユーザーが発見・利用開始できる状態です。"
+    },
+    {
+      "id": "adv_008",
+      "question": "Mature ステージでの主な活動は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "パイロットテスト実施"
+        },
+        {
+          "id": "B",
+          "text": "安定運用とバグ修正・改善の継続",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "廃止予告の発表"
+        },
+        {
+          "id": "D",
+          "text": "新規機能の大規模追加"
+        }
+      ],
+      "explanation": "Mature ステージ では、既に広範に利用されているため、安定性を維持しながらバグ修正・小規模改善を行います。"
+    },
+    {
+      "id": "adv_009",
+      "question": "Deprecated ステージでの期間と活動は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "期間：3ヶ月、廃止予告→移行期間→削除"
+        },
+          "isCorrect": true
+        },
+        {
+          "id": "B",
+          "text": "期間：24ヶ月、新機能追加を継続"
+        },
+        {
+          "id": "C",
+          "text": "期間：1週間、即座に削除"
+        },
+        {
+          "id": "D",
+          "text": "Deprecated ステージはない"
+        }
+      ],
+      "explanation": "Deprecated は 3 ヶ月かけて廃止予告 → ユーザー移行期間 → 最終削除という段階的プロセスを実施します。"
+    },
+    {
+      "id": "adv_010",
+      "question": "スキル管理で「バージョニング戦略」が重要な理由は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "バージョン番号は見栄えのため"
+        },
+        {
+          "id": "B",
+          "text": "変更の互換性を明示し、ユーザーが安全に更新できるようにする",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "バージョン管理は不要"
+        },
+        {
+          "id": "D",
+          "text": "バージョンは自動採番される"
+        }
+      ],
+      "explanation": "セマンティックバージョニングにより、メジャー変更（破壊的）か、マイナー変更（互換）かをユーザーが判断でき、安全な更新が可能です。"
+    },
+    {
+      "id": "adv_011",
+      "question": "スキルの「チーム共有」を効果的にするための推奨方法は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "メール・Slack で個別共有"
+        },
+        {
+          "id": "B",
+          "text": "リポジトリで一元管理し、.github/skills に格納して全員がアクセス可能にする",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "各チームメンバーが独立してスキルを作成"
+        },
+        {
+          "id": "D",
+          "text": "スキル共有は推奨されない"
+        }
+      ],
+      "explanation": "リポジトリでの一元管理により、バージョン管理、ロールバック、改善の自動反映が可能になります。"
+    },
+    {
+      "id": "adv_012",
+      "question": "スキル改善時に「後方互換性を保つ」ことの利点は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "旧バージョンのスキルも継続利用可能で、ユーザーの移行期間を設定できる",
+          "isCorrect": true
+        },
+        {
+          "id": "B",
+          "text": "改善が即座に全員に強制される"
+        },
+        {
+          "id": "C",
+          "text": "改善すること自体が不要"
+        },
+        {
+          "id": "D",
+          "text": "改善版の提供は不要"
+        }
+      ],
+      "explanation": "後方互換性を保つことで、ユーザーが段階的に新バージョンに移行でき、反発を最小化できます。"
+    },
+    {
+      "id": "adv_013",
+      "question": "スキル「メンテナンス」に含まれるべき活動として不適切なのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "定期的なバグ修正とセキュリティ更新"
+        },
+        {
+          "id": "B",
+          "text": "ユーザーフィードバックの反映"
+        },
+        {
+          "id": "C",
+          "text": "ドキュメントの更新"
+        },
+        {
+          "id": "D",
+          "text": "隠れた仕様変更を無告知で実施",
+          "isCorrect": true
+        }
+      ],
+      "explanation": "スキル仕様の変更は必ず告知（CHANGELOG）して、ユーザーに警告する必要があります。"
+    },
+    {
+      "id": "adv_014",
+      "question": "スキルをマーケットプレイスに公開する際の前提条件として最も重要なのはどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "複数のスキルを同時に公開"
+        },
+        {
+          "id": "B",
+          "text": "Mature ステージに到達し、安定性と品質が確認されたもの",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "Beta ステージでも公開可"
+        },
+        {
+          "id": "D",
+          "text": "公開に特別な条件なし"
+        }
+      ],
+      "explanation": "マーケットプレイスでの公開は、Beta テストを完了し、Mature ステージに到達したスキルが適切です。"
+    },
+    {
+      "id": "adv_015",
+      "question": "スキルの「ドキュメント化」で最低限必要な項目は次のうちどれですか？",
+      "type": "multiple_choice",
+      "options": [
+        {
+          "id": "A",
+          "text": "README のみ"
+        },
+        {
+          "id": "B",
+          "text": "README（説明）、USAGE（使用方法）、CHANGELOG（変更履歴）",
+          "isCorrect": true
+        },
+        {
+          "id": "C",
+          "text": "ドキュメント化は不要"
+        },
+        {
+          "id": "D",
+          "text": "README のみで十分"
+        }
+      ],
+      "explanation": "最低限 README、USAGE、CHANGELOG は必須。追加で LICENSE、CONTRIBUTING などがあるとさらに良質です。"
+    }
+  ]
+}
