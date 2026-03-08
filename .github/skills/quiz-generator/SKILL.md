@@ -10,6 +10,10 @@ license: MIT
 
 **任意のMarkdownドキュメント**を対話的なクイズセットに自動変換するスキルです。
 
+> **参考資料**
+> - 📋 [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) - 出力データの詳細仕様
+> - ✅ [JSON スキーマ定義](./schemas/) - 自動バリデーション用のスキーマ（question-schema.json, question-set-schema.json, quizset-metadata-schema.json）
+
 | 特徴 | 説明 |
 |------|------|
 | ✅ **自動生成** | ドキュメント構造を解析し、シリーズとクイズセットを自動生成 |
@@ -22,7 +26,7 @@ license: MIT
 
 ## 実行フロー（マルチステップ）
 
-複数ステップに分けて実行することで、各段階でユーザーが検証・調整可能です。
+複数ステップに分けて実行することで、各段階でユーザーが検証・調整可能です。詳細な出力ファイル形式は「[出力仕様](#出力仕様)」を参照してください。
 
 ### Step 1: コンテンツ分析
 
@@ -34,36 +38,7 @@ action: "analyze"
 doc_path: "docs"
 ```
 
-**出力: `tutorial-quiz-set/.analysis.json`**
-```json
-{
-  "analysis": {
-    "documentPath": "docs",
-    "folderCount": 4,
-    "fileCount": 12,
-    "readmeTitle": "GitHub Copilot Skills チュートリアル"
-  },
-  "seriesCandidates": {
-    "id": "github-copilot-skills-tutorial",
-    "name": "GitHub Copilot Skills チュートリアル",
-    "description": "解析されたドキュメント説明"
-  },
-  "sectionCandidates": [
-    {
-      "id": "fundamentals",
-      "name": "スキル形式の理解",
-      "folderPath": "docs/00-fundamentals",
-      "estimatedQuestions": 7
-    },
-    {
-      "id": "basics",
-      "name": "Agent Skills 基礎",
-      "folderPath": "docs/01-basics",
-      "estimatedQuestions": 15
-    }
-  ]
-}
-```
+**出力:** `tutorial-quiz-set/.analysis.json`
 
 **ユーザーが確認・調整する項目：**
 - ✅ シリーズID・名前が正確か
@@ -93,31 +68,7 @@ adjustments: {
 }
 ```
 
-**出力: `tutorial-quiz-set/.series-config.json`**
-```json
-{
-  "series": {
-    "id": "github-copilot-skills-tutorial",
-    "name": "GitHub Copilot Skills チュートリアル"
-  },
-  "quizSets": [
-    {
-      "id": "fundamentals",
-      "name": "スキル形式の理解",
-      "order": 1,
-      "documentPath": "docs/00-fundamentals",
-      "enabled": true
-    },
-    {
-      "id": "basics",
-      "name": "Agent Skills 基礎",
-      "order": 2,
-      "documentPath": "docs/01-basics",
-      "enabled": true
-    }
-  ]
-}
-```
+**出力:** `tutorial-quiz-set/.series-config.json`
 
 **ユーザーが編集可能：**
 - セクション順序の変更
@@ -128,7 +79,7 @@ adjustments: {
 
 ### Step 3: クイズセット生成
 
-Step 2 の確定構成に基づいて、各セクションのクイズを生成します。
+Step 2 の確定構成に基づいて、各セクションのクイズを生成します。生成されたデータは [JSON スキーマ](./schemas/) に準拠します。
 
 **パラメータ:**
 ```
@@ -163,7 +114,7 @@ action: "validate"
 outputDir: "tutorial-quiz-set"
 ```
 
-**出力: `tutorial-quiz-set/VALIDATION_REPORT.md`**
+**出力:** `tutorial-quiz-set/VALIDATION_REPORT.md`
 - 生成されたクイズセット数
 - 各セクションの問題数・難度分布
 - メタデータの整合性チェック
@@ -189,7 +140,7 @@ tutorial-quiz-set/
 └── README.md
 ```
 
-### シリーズ・ID生成ルール
+### ID 生成ルール
 
 | ドキュメント | ID自動生成 | 例 |
 |-----------|----------|-----|
@@ -227,19 +178,11 @@ tutorial-quiz-set/
 
 ## クイズデータ構造
 
-クイズセットは以下の設計に従います：
+クイズセットは以下の設計に従い、[データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) で詳細に定義されています：
 
-### ✅ メタデータ一元管理アーキテクチャ
+### メタデータ一元管理アーキテクチャ
 
-```
-spa-quiz-app/
-├── metadata.json                    ← 全クイズセットのメタデータを一元管理
-├── basics/
-│   └── agent-skills-basics.json     ← questions のみ
-├── comparison/
-│   └── comparison-comprehensive.json ← questions のみ
-└── ...
-```
+**根拠**: [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) が定義するメタデータ一元管理設計
 
 **構造の利点：**
 1. **関心の分離**: メタデータ（表示・管理用）と問題データ（実行用）を分離
@@ -354,9 +297,14 @@ output_format: "both"
 
 ## 出力仕様
 
+> **重要**: 出力ファイルは [JSON スキーマ](./schemas/) に準拠して自動生成されます。
+> - 📄 [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) - メタデータ検証
+> - 📄 [question-set-schema.json](./schemas/question-set-schema.json) - クイズセット検証
+> - 📄 [question-schema.json](./schemas/question-schema.json) - 個別問題検証
+
 ### ステップ別の生成ファイル
 
-#### Step 1 (analyze): 分析結果
+### Step 1 (analyze): 分析結果
 
 **ファイル：** `tutorial-quiz-set/.analysis.json`
 
@@ -386,7 +334,7 @@ output_format: "both"
 
 ---
 
-#### Step 2 (configure): 構成確定
+### Step 2 (configure): 構成確定
 
 **ファイル：** `tutorial-quiz-set/.series-config.json`
 
@@ -412,9 +360,11 @@ output_format: "both"
 
 ---
 
-#### Step 3 (generate): クイズセット生成
+### Step 3 (generate): クイズセット生成
 
 **メインファイル：** `tutorial-quiz-set/metadata.json` (親シリーズ + セクション情報)
+
+> **スキーマ**: [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) に準拠
 
 ```json
 {
@@ -442,6 +392,8 @@ output_format: "both"
 
 **クイズファイル：** `tutorial-quiz-set/{section}/quiz.json` (各セクションの問題)
 
+> **スキーマ**: [question-set-schema.json](./schemas/question-set-schema.json) に準拠（個別問題は [question-schema.json](./schemas/question-schema.json)）
+
 ```json
 {
   "metadata": {
@@ -453,7 +405,7 @@ output_format: "both"
   },
   "questions": [
     {
-      "id": "1",
+      "id": 1,
       "question": "質問文",
       "options": [
         {"id": "A", "text": "選択肢A"},
@@ -462,16 +414,19 @@ output_format: "both"
         {"id": "D", "text": "選択肢D"}
       ],
       "correctAnswer": "A",
-      "explanation": "解説文",
-      "difficulty": "intermediate"
+      "explanation": "解説文"
     }
   ]
 }
 ```
 
+**フィールド詳細**: [データフォーマット仕様書 § 2. 質問データ形式](./DATA_FORMAT_SPECIFICATION.md#2-質問データ形式)
+
 ---
 
-#### Step 4 (validate): 品質検証
+### Step 4 (validate): 品質検証
+
+生成ファイルが [JSON スキーマ](./schemas/) に準拠しているか自動検証します。
 
 **ファイル：** `tutorial-quiz-set/VALIDATION_REPORT.md`
 
@@ -503,51 +458,9 @@ output_format: "both"
 
 ## 対話的実行ガイド
 
-### ユーザー入力から自動ステップ実行
+> **データ品質保証**: すべての生成ファイルは [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) と [JSON スキーマ](./schemas/) に準拠します。
 
-ユーザーが以下のような入力をした場合、自動的に Step 1→2→3→4 を順序実行します：
-
-- 「勉強用クイズセットを生成して」
-- 「クイズセット作成」
-- 「ドキュメントからクイズを作成」
-- 「クイズセットを生成して」
-
-### 実行フロー
-
-```
-ユーザー入力: "勉強用クイズセットを生成して"
-    ↓
-【Step 1: コンテンツ分析】
-  - doc_path を自動検出またはユーザーに確認
-  - ドキュメント構造を解析
-  - .analysis.json を生成・表示
-    ↓
-  ✋ ユーザー確認待機
-  「構成は良さそうですか？「次へ」で続行、または調整内容を入力してください」
-    ↓
-【Step 2: シリーズ構成確定】
-  - .analysis.json を読み込み
-  - ユーザーからの調整指示を反映（あれば）
-  - .series-config.json を生成・表示
-    ↓
-  ✋ ユーザー確認待機
-  「この構成で良いですか？「次へ」で生成開始」
-    ↓
-【Step 3: クイズセット生成】
-  - .series-config.json に基づき問題生成
-  - metadata.json と各セクション quiz.json を生成・概要を表示
-    ↓
-  ✋ ユーザー確認待機
-  「生成完了しました。「次へ」で検証を実行」
-    ↓
-【Step 4: 品質検証】
-  - 生成ファイルの整合性確認
-  - 問題数・難度分布・必須フィールド確認
-  - VALIDATION_REPORT.md を生成・表示
-    ↓
-✅ 完了
-  「クイズセット生成が完了しました (tutorial-quiz-set/)」
-```
+このガイドは、ユーザーが各ステップで確認すべき項目と、調整方法を説明します。
 
 ### 各ステップでの確認項目
 
@@ -562,14 +475,13 @@ output_format: "both"
   └─ ...
 
 確認事項:
-✓ シリーズID・名前は正確か
-✓ セクション分類は適切か
-✓ セクション名は分かりやすいか
+✅ シリーズID・名前は正確か
+✅ セクション分類は適切か
+✅ セクション名は分かりやすいか
 
 → ユーザー応答:
   「次へ」: Step 2 に進む
-  「シリーズ名を{新しい名前}に変更」: 調整後 Step 2 に進む
-  「{セクションID}を除外」: 調整後 Step 2 に進む
+  「調整」: 以下の例を参照して調整後 Step 2 に進む
 ```
 
 #### Step 2 後の確認
@@ -595,7 +507,7 @@ output_format: "both"
 ✅ basics/quiz.json: 35 問題
 ✅ ...
 
-出力先: c:\dev\apps\spa-quiz-app\tutorial-quiz-set/
+出力先: tutorial-quiz-set/
 
 → ユーザー応答:
   「次へ」: Step 4 (検証) に進む
@@ -644,15 +556,38 @@ Step 2 または Step 3 の確認で、ユーザーが:
 
 → 処理を中止して、ここまでの出力ファイル（あれば）を保持
 ```
-- `questions[].difficulty` - 出題難度
+
+**詳細フィールド説明**: [データフォーマット仕様書 § 1. メタデータ形式](./DATA_FORMAT_SPECIFICATION.md#1-メタデータ形式)
 
 ---
 
 ## 詳細仕様
 
+### JSON スキーマに準拠したデータ生成
+
+SKILL.md で説明するすべてのクイズセットは、[schemas](./schemas/) に定義された JSON Schema (Draft-07) に厳密に準拠します。以下のドキュメントを参照してください：
+
+| ドキュメント | 用途 | 参照 |
+|-----------|------|-----|
+| **データフォーマット仕様書** | クイズデータの詳細要件・ネーミング規則 | [DATA_FORMAT_SPECIFICATION.md](./DATA_FORMAT_SPECIFICATION.md) |
+| **question-schema.json** | 個別問題の検証スキーマ | [schemas/question-schema.json](./schemas/question-schema.json) |
+| **question-set-schema.json** | クイズセット全体の検証スキーマ | [schemas/question-set-schema.json](./schemas/question-set-schema.json) |
+| **quizset-metadata-schema.json** | メタデータ（クイズセット情報）の検証スキーマ | [schemas/quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) |
+
+### よくある質問への回答
+
+詳細は [データフォーマット仕様書 § 5. よくある質問 (FAQ)](./DATA_FORMAT_SPECIFICATION.md#5-よくある質問-faq) を参照してください：
+
+- **Q1**: 問題と選択肢の数が異なる場合は？
+- **Q2**: 複数の正解がある場合は？
+- **Q3**: 難易度レベルはどうやって決めればよい？
+- **Q4**: 階層的なクイズセット（parentId を使う）の例は？
+
 ---
 
 ## 品質基準
+
+> **データ検証**: すべての出力は [JSON スキーマ](./schemas/) により自動検証され、[データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) に準拠することが保証されます。
 
 ### 出題設計
 - ✅ ドキュメント内容を正確に反映
@@ -665,6 +600,13 @@ Step 2 または Step 3 の確認で、ユーザーが:
 - ✅ 関連トピックへのリンク情報
 - ✅ 日本語の自然性を保証
 
+### データ完全性
+- ✅ **ID 形式**: ケバブケース準拠 ([quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json))
+- ✅ **選択肢数**: A/B/C/D の 4 つが必須 ([question-schema.json](./schemas/question-schema.json))
+- ✅ **難度値**: 有効な難度のみ (`beginner`, `intermediate`, `advanced`)
+- ✅ **レベル**: 1（トップレベル）または 2（子セット）
+- ✅ **メタデータ整合性**: 親セット・子セット関係が正しく定義されている
+
 ### 難度分布
 
 | 配分タイプ | Beginner | Intermediate | Advanced |
@@ -672,6 +614,49 @@ Step 2 または Step 3 の確認で、ユーザーが:
 | balanced | 15% | 70% | 15% |
 | beginner_focused | 50% | 40% | 10% |
 | advanced_focused | 10% | 40% | 50% |
+
+---
+
+## スキーマ検証ガイド
+
+### 自動検証の仕組み
+
+生成されたすべての JSON ファイルは、以下のスキーマに対して自動検証されます。詳細は [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) 内の各スキーマリファレンスを参照してください：
+
+| ファイル | スキーマ | 検証内容 | 参照 |
+|---------|---------|----------|------|
+| `metadata.json` | [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) | ID形式、難度値、順序番号など | [メタデータ仕様](./DATA_FORMAT_SPECIFICATION.md#1-メタデータ形式) |
+| `{section}/quiz.json` | [question-set-schema.json](./schemas/question-set-schema.json) | 問題配列の構造と内容 | [質問セット仕様](./DATA_FORMAT_SPECIFICATION.md#2-質問データ形式) |
+| 個別問題 | [question-schema.json](./schemas/question-schema.json) | 選択肢数（4つ必須）、ID形式など | [個別問題仕様](./DATA_FORMAT_SPECIFICATION.md#option-オブジェクトの仕様)
+
+### スキーマの主要検証ルール
+
+#### [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) - メタデータ検証
+- **ID**: ケバブケース (`^[a-z0-9-]+$`) - 例: `github-copilot-skills`
+- **difficulty**: 有効値のみ受け入れ (`beginner`, `intermediate`, `advanced`, `beginner to intermediate`, `beginner to advanced`)
+- **level**: 1 (トップ) または 2 (子セット)
+- **questionCount**: 正の整数 (最小: 1)
+- **dataPath**: 相対パス形式またはnull（親セットの場合）
+
+#### [question-set-schema.json](./schemas/question-set-schema.json) - クイズセット検証
+- **questions**: 配列必須、最小 1 要素
+- 各要素は [question-schema.json](./schemas/question-schema.json) に準拠
+
+#### [question-schema.json](./schemas/question-schema.json) - 個別問題検証
+- **id**: 正の整数（クイズセット内で連番）
+- **question**: 空でない文字列
+- **options**: 正確に 4 つの選択肢（A, B, C, D）
+- **correctAnswer**: A/B/C/D のいずれか
+- **explanation**: 空でない文字列
+
+### バリデーションレポート
+
+Step 4 の検証では以下も確認されます：
+- ✅ スキーマ準拠性（JSON Schema Draft-07）- [スキーマファイル参照](./schemas/)
+- ✅ 必須フィールドの存在
+- ✅ データ型の正確性
+- ✅ ID の一意性
+- ✅ メタデータの整合性 - [詳細は仕様書参照](./DATA_FORMAT_SPECIFICATION.md#3-ファイル配置)
 
 ---
 
