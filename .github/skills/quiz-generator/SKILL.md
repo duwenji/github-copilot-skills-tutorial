@@ -1,31 +1,94 @@
 ---
 name: quiz-generator
-description: ドキュメントをクイズセット化し、JSON形式で出力。Agent Skills チュートリアルの各Partを対話的に学習できるクイズに変換
+description: 任意のMarkdownドキュメントをクイズセット化しJSON形式で出力。複数プロジェクト・複数形式に対応した汎用クイズ生成スキル
 license: MIT
 ---
 
-# Quiz Generator
+# Quiz Generator（汎用化版）
 
 ## 概要
 
-このスキルは、GitHub Copilot Agent Skills チュートリアル（docs/ フォルダ）のドキュメントを、対話的なクイズセットに自動変換します。
+このスキルは、**任意のMarkdownドキュメント**を対話的なクイズセットに自動変換します。
 
-各Part（Part 0-5）ごとにシリーズ化され、難度別（beginner/intermediate/advanced）に設計された問題セットを、JSON形式で生成します。
+プロジェクトの種類（技術チュートリアル、学習ガイド、ナレッジベース等）を問わず、以下の機能を提供：
+
+- ✅ **Workspace非依存** - 特定のプロジェクト構造に依存しない完全な汎用化
+- ✅ **シリーズ自動生成** - ドキュメント構造から自動的にシリーズ名を生成
+- ✅ **クイズセット自動洗い出し** - ドキュメント階層を解析し、クイズセットを自動分類
+- ✅ **単一シリーズモデル** - 生成されたすべてのクイズセットが1つのシリーズに統一
+- ✅ **難度別問題設計** - beginner/intermediate/advanced で段階的学習に対応
+- ✅ **複数形式出力** - JSON, Markdown でのエクスポート対応
 
 学習者は生成されたクイズで理解度を確認し、解説から詳細を学ぶことができます。
 
-## クイズシリーズ構成
+## シリーズ構成と自動生成ロジック
 
-| Series | Part | タイトル | 文書数 | 想定問題数 |
-|--------|------|---------|--------|----------|
-| **fundamentals** | 0 | スキル形式の理解 | 1 | 5-7 |
-| **basics** | 1 | Agent Skills の基礎 | 3 | 12-15 |
-| **comparison** | 2 | 他技術との比較 | 4 | 16-20 |
-| **implementation** | 3 | 実装編 | 5 | 20-25 |
-| **advanced** | 4 | 活用編 | 4 | 16-20 |
-| **advanced-topics** | 5 | 高度な活用 | 3 | 12-15 |
+### 自動シリーズ生成のプロセス
 
-**総合計**: 81-102問の学習コンテンツ
+スキルは、ドキュメント構造を解析して自動的にシリーズを生成します：
+
+```
+入力: ドキュメントフォルダ
+  ├── 01-introduction/ → Series ID: introduction, Name: "イントロダクション"
+  ├── 02-core-concepts/ → Series ID: core-concepts, Name: "コア概念"
+  ├── 03-advanced/ → Series ID: advanced, Name: "応用編"
+  └── README.md
+       ↓
+       スキルが自動解析
+       ↓
+出力: 1つの親シリーズ + 複数の子クイズセット
+```
+
+### ドキュメント構造から自動生成されるシリーズ名
+
+| ドキュメント構造 | 自動生成シリーズID | シリーズ名生成ルール |
+|--------------|-------------------|-----------------|
+| `docs/01-introduction/` | `introduction` | フォルダプレフィックス番号を削除 |
+| `docs/setup-guide/` | `setup-guide` | フォルダ名をそのまま使用 |
+| `README.md` の H1 | その値 | タイトルから複数単語をハイフン区切りに |
+| `02-core-principles/01-solid.md` | `solid` | ファイル名のプレフィックス番号を削除 |
+
+### 例解：GitHub Copilot Skills チュートリアルの場合
+
+ドキュメント構造：
+```
+docs/
+├── 00-fundamentals/01-overview.md
+├── 01-basics/01-definition.md, 02-features.md
+├── 02-comparison/01-vs-prompt.md, 02-vs-plugin.md
+└── 03-implementation/01-pattern.md, 02-example.md
+```
+
+自動生成結果：
+```json
+{
+  "seriesId": "github-copilot-skills-tutorial",
+  "seriesName": "GitHub Copilot Skills チュートリアル",
+  "parentQuizSet": {
+    "id": "github-copilot-skills-tutorial",
+    "level": 1
+  },
+  "childQuizSets": [
+    {
+      "id": "fundamentals",
+      "name": "スキル形式の理解",
+      "seriesId": "github-copilot-skills-tutorial",
+      "level": 2,
+      "order": 1,
+      "documentPath": "docs/00-fundamentals"
+    },
+    {
+      "id": "basics",
+      "name": "Agent Skills 基礎",
+      "seriesId": "github-copilot-skills-tutorial",
+      "level": 2,
+      "order": 2,
+      "documentPath": "docs/01-basics"
+    },
+    ...
+  ]
+}
+```
 
 ---
 
@@ -33,19 +96,38 @@ license: MIT
 
 ### 必須
 
-| パラメータ | 型 | 説明 | 指定可能値 |
-|---------|-----|------|----------|
-| `series` | string | クイズシリーズ名 | `fundamentals`, `basics`, `comparison`, `implementation`, `advanced`, `advanced-topics` |
+| パラメータ | 型 | 説明 |
+|---------|-----|------|
+| `doc_path` | string | クイズ生成対象のドキュメントフォルダパス（相対パス例：`docs/`, `tutorials/`) |
 
 ### オプション
 
 | パラメータ | 型 | デフォルト | 説明 | 例 |
 |---------|-----|----------|------|-----|
+| `series_title` | string | フォルダ名から自動生成 | シリーズの表示名 | `GitHub Copilot Skills チュートリアル` |
+| `output_dir` | string | `tutorial-quiz-set` | 出力先ディレクトリ | `tutorial-quiz-set`, `learning-materials/` |
 | `target_audience` | string | `intermediate` | 対象レベル | `beginner`, `intermediate`, `advanced` |
-| `question_count` | number | `自動` | 生成問題数 | `5`, `10`, `15` |
+| `question_count` | number | `自動` | 全クイズセットの合計問題数 | `50`, `100`, `150` |
 | `include_explanation` | boolean | `true` | 解説を含める | `true`, `false` |
 | `difficulty_distribution` | string | `balanced` | 難度配分 | `balanced` (15:70:15), `beginner_focused` (50:40:10), `advanced_focused` (10:40:50) |
-| `output_format` | string | `json` | 出力形式 | `json`, `markdown` |
+| `output_format` | string | `json` | 出力形式 | `json`, `markdown`, `both` |
+| `max_depth` | number | `2` | ドキュメント階層の深さ | `1`, `2`, `3` |
+| `quiz_per_section` | number | `auto` | 各セクションあたりの問題数 | `5`, `10`, `15` |
+
+### パラメータの詳細説明
+
+#### series_title の自動生成ルール
+
+1. **フォルダ名から** - `docs/` → "Documentation"
+2. **README.md の H1 から** - 最初の H1 タイトルを使用
+3. **フォルダの数字プレフィックスを削除** - `02-core-concepts/` → "Core Concepts"
+4. **複数単語の場合は タイトルケース化** - `github-copilot-skills` → "GitHub Copilot Skills"
+
+#### output_dir の決定ロジック
+
+- デフォルト: `{doc_path}/quizzes/` に自動出力
+- カスタム指定時: `/output_dir/{series_id}/` に出力
+- Workspace依存性なし: 相対パスで対応
 
 ---
 
@@ -77,104 +159,209 @@ spa-quiz-app/
 
 ## 使用例
 
-### 例1: Basics シリーズのクイズを生成
+### 例1：自動シリーズ生成（最もシンプル）
 
 ```
-User: "Series: basics でクイズセットを生成してください。
-intermediate レベルで、均衡した難度配分でお願いします"
+ユーザー入力:
+"docs フォルダからクイズセットを生成してください。
+シリーズは自動生成、intermediate レベルでお願いします"
 
-series: basics
+パラメータ:
+doc_path: "docs"
 target_audience: intermediate
-difficulty_distribution: balanced
 ```
 
-**出力**: `spa-quiz-app/basics/agent-skills-basics.json`
-- Part 1-1, 1-2, 1-3 全体をカバーする 12-15 問
+**処理フロー**:
+1. `docs/` フォルダ構造を自動解析
+2. サブフォルダ（01-xxx/, 02-yyy/）を検出
+3. シリーズID・名前を自動生成
+4. 各セクション単位でクイズセットを生成
+5. 親セット（シリーズ全体）を自動作成
 
-### 例2: 初級者向けの Fundamentals クイズ
+**出力例**:
+```
+tutorial-quiz-set/
+├── metadata.json （親シリーズ情報）
+├── fundamentals/quiz.json （子クイズセット1）
+├── basics/quiz.json （子クイズセット2）
+├── advanced/quiz.json （子クイズセット3）
+└── README.md
+```
+
+### 例2：カスタムシリーズタイトル + 出力先指定
 
 ```
-User: "Part 0 (スキル形式の理解) を beginner 向けに、
-簡潔なクイズセットで生成してください"
+ユーザー入力:
+"clean-architecture フォルダからクイズを生成。
+シリーズ名を『クリーンアーキテクチャ完全ガイド』にして、
+learning-materials フォルダに出力してください"
 
-series: fundamentals
+パラメータ:
+doc_path: "clean-architecture"
+series_title: "クリーンアーキテクチャ完全ガイド"
+target_audience: intermediate
+```
+
+**出力**:
+```
+tutorial-quiz-set/
+├── metadata.json （親: クリーンアーキテクチャ完全ガイド）
+├── core-principles/quiz.json
+├── architecture-layers/quiz.json
+├── design-patterns/quiz.json
+└── implementation/quiz.json
+```
+
+### 例3：初級者向け、問題数指定
+
+```
+ユーザー入力:
+"パイソン入門 (python-tutorial) からクイズを生成。
+初級者向けで、合計30問でお願いします"
+
+パラメータ:
+doc_path: "python-tutorial"
 target_audience: beginner
-question_count: 5
+question_count: 30
+difficulty_distribution: beginner_focused
 ```
 
-**出力**: `spa-quiz-app/fundamentals/skill-format-overview.json`
-- 5問（全て初級者向け）
-- 推定学習時間: 5-8 分
+**特徴**:
+- ドキュメント全体から自動生成
+- 総問題数: 30問（各セクション按分配置）
+- 難度: 50% beginner, 40% intermediate, 10% advanced
 
-### 例3: 実装パターンの理解を確認
-
-```
-User: "Series: implementation でクイズを生成。
-上級者向けで、実装パターン全体の複合理解を問う問題重視で"
-
-series: implementation
-target_audience: advanced
-difficulty_distribution: advanced_focused
-```
-
-**出力**: `spa-quiz-app/implementation/implementation-comprehensive.json`
-- 20-25 問（advanced 重視）
-- 推定学習時間: 30-40 分
-
-### 例4: Markdown形式での出力
+### 例4：複数形式での出力
 
 ```
-User: "Series: comparison をMarkdown形式で出力し、
-README.md に含められるようにしてください"
+ユーザー入力:
+"tutorials フォルダからクイズを生成。
+JSON と Markdown の両形式でお願いします"
 
-series: comparison
-output_format: markdown
+パラメータ:
+doc_path: "tutorials"
+output_format: "both"
 ```
 
-**出力**: `spa-quiz-app/comparison/quiz-comparison.md`
-- 閲覧・編集可能なMarkdown形式
+**出力**:
+```
+tutorial-quiz-set/
+├── metadata.json
+├── module-1/
+│   ├── quiz.json
+│   └── quiz.md
+├── module-2/
+│   ├── quiz.json
+│   └── quiz.md
+└── ...
+```
 
 ---
 
 ## 出力仕様
 
-### メタデータ（metadata.json に追加）
+### 自動生成されるシリーズ構造
+
+すべてのクイズセットは、1つの親シリーズに属します：
+
+```
+Parent Series (Level 1)
+  ├─ Child Quiz Set 1 (Level 2)
+  ├─ Child Quiz Set 2 (Level 2)
+  ├─ Child Quiz Set 3 (Level 2)
+  └─ Child Quiz Set N (Level 2)
+```
+
+### メタデータファイル（metadata.json）
+
+`{output_dir}/metadata.json` - シリーズ情報一元管理
+
 ```json
 {
-  "id": "spa-quiz-app-docs",
-  "name": "spa-quiz-app ドキュメント",
-  "description": "spa-quiz-appのセットアップ、アーキテクチャ、デプロイ、トラブルシューティングに関するクイズ",
-  "category": "技術",
-  "icon": "📚",
-  "questionCount": 30,
-  "difficulty": "intermediate",
-  "dataPath": "spa-quiz-app/basics/agent-skills-basics.json",
-  "parentId": null,
-  "group": null,
-  "level": 1,
-  "order": 1
+  "series": {
+    "id": "github-copilot-skills-tutorial",
+    "name": "GitHub Copilot Skills チュートリアル",
+    "description": "ドキュメント全体の説明",
+    "icon": "🎓",
+    "level": 1,
+    "parentId": null,
+    "group": "github-copilot-skills-tutorial-series",
+    "questionCount": 84,
+    "difficulty": "beginner to advanced",
+    "childCount": 6,
+    "metadata": {
+      "generatedAt": "2026-03-08T10:00:00Z",
+      "sourceDocPath": "docs",
+      "docStructure": "auto-detected",
+      "skillVersion": "2.0"
+    }
+  },
+  "quizSets": [
+    {
+      "id": "fundamentals",
+      "name": "スキル形式の理解",
+      "description": "セクション説明",
+      "category": "自動検出",
+      "icon": "📚",
+      "level": 2,
+      "parentId": "github-copilot-skills-tutorial",
+      "group": "github-copilot-skills-tutorial-series",
+      "order": 1,
+      "questionCount": 7,
+      "difficulty": "beginner",
+      "dataPath": "fundamentals/quiz.json",
+      "documentPath": "docs/00-fundamentals",
+      "order": 1
+    },
+    {
+      "id": "basics",
+      "name": "Agent Skills 基礎",
+      "description": "セクション説明",
+      "category": "自動検出",
+      "icon": "🎯",
+      "level": 2,
+      "parentId": "github-copilot-skills-tutorial",
+      "group": "github-copilot-skills-tutorial-series",
+      "questionCount": 15,
+      "difficulty": "intermediate",
+      "dataPath": "basics/quiz.json",
+      "documentPath": "docs/01-basics",
+      "order": 2
+    }
+  ]
 }
 ```
 
-#### フィールド説明
-- **id**: クイズセットの一意識別子
-- **name**: クイズセット の表示名
-- **description**: クイズセットの説明
-- **category**: カテゴリ分類
-- **icon**: 絵文字アイコン
-- **questionCount**: 問題数
-- **difficulty**: 難度レベル（beginner/intermediate/advanced）
-- **dataPath**: クイズデータファイルの相対パス
-- **parentId**: シリーズの親セットID（独立したセットの場合は`null`、シリーズの子の場合は親のID）
-- **group**: シリーズグループの識別子（シリーズに属さない場合は`null`）
-- **level**: 階層レベル（1=独立または親セット、2=シリーズの子セット）
-- **order**: 表示順序（同一グループ内での並び順）
+#### メタデータフィールド説明
+
+**series オブジェクト**:
+- `id` - シリーズの一意識別子（ドキュメントフォルダ名から自動生成）
+- `name` - シリーズの表示名（自動生成またはユーザー指定）
+- `description` - README.md または最初のファイルの説明
+- `level` - 常に `1`（親シリーズ）
+- `group` - シリーズグループの識別子
+- `questionCount` - すべての子クイズセットの合計問題数
+- `childCount` - 子クイズセットの数
+
+**quizSets 配列**:
+- 各子クイズセットの情報
+- `level`: 常に `2`（子セット）
+- `parentId`: 親シリーズのID
+- `order`: シリーズ内での並び順（ドキュメント順序から自動決定）
 
 ### クイズデータファイル構造
-`spa-quiz-app/basics/agent-skills-basics.json`
+
+`{output_dir}/{series_id}/quiz.json`
 
 ```json
 {
+  "metadata": {
+    "generatedAt": "2026-03-08T10:00:00Z",
+    "version": "2.0",
+    "sourcePath": "docs/01-basics",
+    "seriesId": "github-copilot-skills-tutorial",
+    "seriesName": "GitHub Copilot Skills チュートリアル"
+  },
   "questions": [
     {
       "id": "1",
@@ -186,131 +373,103 @@ output_format: markdown
         {"id": "D", "text": "選択肢D"}
       ],
       "correctAnswer": "A",
-      "explanation": "解説文（複数行対応）",
+      "explanation": "解説文",
       "difficulty": "beginner|intermediate|advanced"
     }
   ]
 }
 ```
 
-**クイズ JSON のフィールド説明：**
-
-| フィールド | 説明 | 使用例 |
-|----------|------|--------|
-| `questions` | 問題配列 | `[{ id, question, options, ... }, ...]` |
-| `questions[].id` | 問題の一意な番号 | `1`, `2`, `3` |
-| `questions[].question` | 問題文 | `"GitHub Copilot Agent Skills は何を教え込むための機能ですか？"` |
-| `questions[].options` | 4択選択肢の配列 | `[{ id: "A", text: "選択肢A" }, ...]` |
-| `questions[].correctAnswer` | 正答の選択肢ID | `"B"` |
-| `questions[].explanation` | 解説（ドキュメント内容に基づく） | `"Agent Skills は..." ` |
-| `questions[].difficulty` | 出題難度 | `beginner`, `intermediate`, `advanced` |
-
-**設計のポイント：**
-- ✅ **関心の分離**: 表示・管理用メタデータは `metadata.json`、問題データのみをクイズ JSON に保持
-- ✅ **保守性向上**: メタデータ修正時にクイズ JSON を編集不要
-- ✅ **拡張性**: 複数のクイズセットを同一の `metadata.json` で管理可能
+**フィールド説明**:
+- `metadata.seriesId` - 所属するシリーズのID
+- `metadata.seriesName` - 所属するシリーズの名前
+- `metadata.sourcePath` - 生成元のドキュメントパス
+- `questions[].difficulty` - 出題難度
 
 ---
 
 ## シリーズ管理構造の実装例
 
-複数のクイズセットを **1つのシリーズ** として段階的に学習できるように構成する場合、`parentId`, `group`, `level` フィールドを使用します。
+### 単一シリーズモデル
 
-### シリーズ構造の例
+すべての生成されたクイズセットは、1つの親シリーズに統一されます：
 
 ```
-📚 GitHub Copilot Skills チュートリアル（親セット）
- ├─ 📖 Part 0: スキル形式の理解
- ├─ 🎯 Part 1: Agent Skills 基礎
- ├─ 📊 Part 2: 他技術との比較
- ├─ ⚙️ Part 3: 実装編
- ├─ 🚀 Part 4: 活用戦略
- └─ 🏆 Part 5: 高度な活用
+📚 [親シリーズ] （レベル1）
+ ├─ [子クイズセット1] - 01セクション（レベル2）
+ ├─ [子クイズセット2] - 02セクション（レベル2）
+ ├─ [子クイズセット3] - 03セクション（レベル2）
+ └─ [子クイズセットN] - NNセクション（レベル2）
 ```
 
-### metadata.json での実装
+### 構造例1：GitHub Copilot Skills チュートリアル
 
-**親セット（Level 1）**：
+```
+📚 GitHub Copilot Skills チュートリアル（親）
+ ├─ 📖 スキル形式の理解（01、5問）
+ ├─ 🎯 Agent Skills 基礎（02、15問）
+ ├─ 📊 他技術との比較（03、20問）
+ ├─ ⚙️ 実装編（04、25問）
+ ├─ 🚀 活用編（05、12問）
+ └─ 🏆 高度な活用（06、7問）
+  
+ 総計: 84問、6つのクイズセット
+```
+
+**metadata.json での記述**:
+
+親シリーズ:
 ```json
 {
-  "id": "github-copilot-skills-tutorial",
-  "name": "GitHub Copilot Skills チュートリアル",
-  "description": "GitHub Copilot Agent Skills の完全学習ガイド。基礎から応用まで段階的に学べるシリーズ",
-  "category": "Agent Skills",
-  "icon": "🎓",
-  "questionCount": 84,
-  "difficulty": "beginner to advanced",
-  "dataPath": null,
-  "parentId": null,
-  "group": "github-copilot-skills-tutorial-series",
-  "level": 1,
-  "order": 3
+  "series": {
+    "id": "github-copilot-skills-tutorial",
+    "name": "GitHub Copilot Skills チュートリアル",
+    "description": "Agent Skills の完全学習ガイド",
+    "level": 1,
+    "parentId": null,
+    "group": "github-copilot-skills-tutorial-series",
+    "questionCount": 84,
+    "childCount": 6
+  }
 }
 ```
 
-**子セット（Level 2）- 複数の例**：
+### 構造例2：Clean Architecture ガイド
 
-```json
-{
-  "id": "spa-quiz-app-skill-format-overview",
-  "name": "スキル形式の理解 - 初級クイズ",
-  "description": "Agent Skills の基本概念、SKILL.md 形式とは何か、スキル配置場所、サポートプラットフォームを理解する初級向けクイズセット。Part 0 をカバー",
-  "category": "Agent Skills",
-  "icon": "📚",
-  "questionCount": 5,
-  "difficulty": "beginner",
-  "dataPath": "path/to/skill-format-overview.json",
-  "parentId": "github-copilot-skills-tutorial",
-  "group": "github-copilot-skills-tutorial-series",
-  "level": 2,
-  "order": 4,
-  "estimatedLearningTime": "5-8分",
-  "topics": ["Agent Skills のオープンスタンダード", "SKILL.md 形式の特徴", ...]
-}
 ```
+🏗️ Clean Architecture 完全ガイド（親）
+ ├─ 📋 SOLID 原則（01、21問）
+ ├─ 🎯 レイヤー設計（02、18問）
+ ├─ 🔧 デザインパターン（03、22問）
+ ├─ ⚙️ 実装ガイド（04、20問）
+ └─ 📦 ベストプラクティス（05、15問）
 
-```json
-{
-  "id": "spa-quiz-app-agent-skills-basics",
-  "name": "Agent Skills 基礎クイズセット",
-  "description": "GitHub Copilot Agent Skills の基礎概念、従来のプロンプト手法との違い、スキルの仕組みを理解するためのクイズセット。Part 1-1, 1-2, 1-3 全体をカバー",
-  "category": "Agent Skills",
-  "icon": "🎯",
-  "questionCount": 15,
-  "difficulty": "intermediate",
-  "dataPath": "path/to/agent-skills-basics.json",
-  "parentId": "github-copilot-skills-tutorial",
-  "group": "github-copilot-skills-tutorial-series",
-  "level": 2,
-  "order": 5,
-  "estimatedLearningTime": "20-25分",
-  "topics": ["Agent Skills の定義", "スキルの構成要素", ...]
-}
+ 総計: 96問、5つのクイズセット
 ```
 
 ### シリーズ管理のキーポイント
 
-| フィールド | Level 1（親セット） | Level 2（子セット） | 説明 |
-|----------|------------------|------------------|------|
-| `parentId` | `null` | 親セットのID | 階層関係の定義 |
-| `group` | `"github-copilot-skills-tutorial-series"` | 同じ値 | シリーズグループの識別 |
-| `level` | `1` | `2` | 階層レベル |
-| `dataPath` | `null` | クイズデータのパス | 親セットはデータを持たない |
-| `questionCount` | 子セットの合計 | 各セットの問題数 | 親セットは子セットの総計 |
-| `order` | 表示順序 | 子セット毎の順序 | 同一グループ内での並び順 |
+| 項目 | 説明 |
+|------|------|
+| **親シリーズ** | 1つのみ自動生成。ID は doc_path から決定 |
+| **子クイズセット** | ドキュメントのセクション/フォルダごとに自動生成 |
+| **order** | ドキュメントの フォルダプレフィックス番号から自動決定 |
+| **group** | 親シリーズのIDと同一値で統一 |
+| **parentId** | 子セットは必ず親シリーズのIDを参照 |
 
-### UI での表現例
+### 自動生成ロジック
 
-この構造により、SPA フロントエンドは以下のように表現できます：
+以下のルールで自動的にクイズセットが分類されます：
 
 ```
-▼ GitHub Copilot Skills チュートリアル [84問] 🎓 beginner to advanced
-  ├─ スキル形式の理解 [5問] 📚 beginner
-  ├─ Agent Skills 基礎 [15問] 🎯 intermediate
-  ├─ 他技術との比較 [20問] 📊 intermediate to advanced
-  ├─ 実装編 [23問] ⚙️ advanced
-  ├─ 活用戦略 [23問] 🚀 advanced
-  └─ 高度な活用 [18問] 🏆 advanced
+docs/
+├── 00-introduction/ → order: 1, id: "introduction"
+├── 01-basics/ → order: 2, id: "basics"
+├── 02-advanced/ → order: 3, id: "advanced"
+└── 03-implementation/ → order: 4, id: "implementation"
+        ↓
+すべて parent_id = "docs" (親シリーズ) に統一
+group = "docs-series" に統一
 ```
 
 ---
@@ -352,16 +511,76 @@ output_format: markdown
 - ⚠️ 曖昧性（定義や説明が不明確）
 - 📝 誤りや古い情報
 - 🔗 参照関係の不完全性
+- 🔄 複数ファイル間の一貫性の問題
 
 これらは出力レポートの `documentIssues` フィールドに含まれます。
 
 ---
 
+## 汎用化版の主な改善点
+
+| 項目 | 既存版 | 汎用版 |
+|------|--------|--------|
+| **Workspace依存性** | spa-quiz-app に固定 | 完全に独立（相対パスのみ）|
+| **シリーズ構成** | 固定的（6シリーズ） | 自動生成（ドキュメント構造から） |
+| **シリーズ名生成** | 手動指定のみ | 自動生成（フォルダ名または README タイトルから） |
+| **クイズセット分類** | 手動定義（series_config） | 自動洗い出し（フォルダ構造から）|
+| **シリーズモデル** | 複数シリーズ対応 | 単一親シリーズ（すべてのクイズセットが属する） |
+| **出力パス** | プロジェクト別に指定 | `{doc_path}/quizzes/` がデフォルト |
+| **パラメータ数** | 多い（10+） | 少ない（必須1+オプション8） |
+
+### 改善による効果
+
+✅ **シンプル化**
+- 必須パラメータは `doc_path` のみ
+- 自動生成によりユーザー入力を削減
+
+✅ **完全汎用化**
+- 特定プロジェクト・ワークスペース名への依存なし
+- どのプロジェクトでも同じスキルで対応
+
+✅ **自動化**
+- シリーズ名から クイズセット分類まで自動生成
+- 保守性向上、エラー削減
+
+✅ **予測可能性**
+- 明確な親子関係（1つの親 + N個の子）
+- UI表示が統一される
+
 ## 次のステップ
 
 生成されたクイズセットは以下の方法で活用できます：
 
-1. **学習ツール化**: spa-quiz-app に組み込み、対話的学習環境を提供
-2. **評価ツール化**: 理解度測定、レベル判定に活用
-3. **ドキュメント改善**: 質問から、ドキュメント内の曖昧性を特定
-4. **トレーニング教材**: チーム内研修用資料として活用
+### ✅ クイズセット活用例
+
+**親シリーズの機能**
+1. 学習ロードマップとしての表示
+2. 全体的な理解度測定
+3. シリーズの進捗管理
+
+**子クイズセットの機能**
+1. 各セクション単位での理解確認
+2. 段階的な難度上昇による学習
+3. セクション別の弱点分析
+
+### 📊 メトリクス活用
+
+生成されたクイズセットのメタデータから：
+- ドキュメント品質の測定（テスト対象範囲）
+- 学習カバレッジの検証（セクション別問題数）
+- シリーズ全体の学習パス設計
+- ドキュメント更新による影響度の追跡（sourcePath 記録）
+
+### 🔄 継続的改善サイクル
+
+```
+ドキュメント更新
+    ↓
+自動クイズ再生成
+    ↓
+シリーズ・クイズセット自動更新
+    ↓
+学習者からのフィードバック
+    ↓
+ドキュメント改善
+```
