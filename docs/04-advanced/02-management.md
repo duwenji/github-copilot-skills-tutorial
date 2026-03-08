@@ -53,6 +53,15 @@
 □ USAGE.md（使用方法）
 □ test_cases.json（テストケース5個以上）
 □ CHANGELOG.md（変更履歴）
+
+【補助リソース】
+□ scripts/ ディレクトリ
+  ├─ validate_input.py（入力値検証スクリプト）
+  └─ test-harness.py（テスト実行ツール）
+□ templates/ ディレクトリ
+  ├─ prompt-template.md
+  └─ output-schema.json
+□ docs/API.md（パラメータ・出力形式の詳細説明）
 ```
 
 **出口基準:**

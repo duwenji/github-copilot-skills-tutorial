@@ -71,6 +71,108 @@ LLM レスポンセ
 3. 入力バリデーション (4% → 2%): 最適化
 ```
 
+---
+
+## パフォーマンス計測スクリプト
+
+### performance-profiler.py（推奨実装）
+
+以下は、スキルのパフォーマンスを包括的に計測・分析するPythonスクリプトの例です。
+
+```python
+#!/usr/bin/env python3
+\"\"\"Performance profiler for Copilot Skills\"\"\"
+
+import time
+import json
+from functools import wraps
+from datetime import datetime
+from typing import Dict, Any
+
+class PerformanceProfiler:
+    \"\"\"各段階のパフォーマンスを計測・分析\"\"\"
+    
+    def __init__(self, skill_name: str, target_exec_time_ms: float = 5000):
+        self.skill_name = skill_name
+        self.target_time = target_exec_time_ms / 1000  # 秒に変換
+        self.measurements = {}
+    
+    def measure(self, func):
+        \"\"\"デコレータで実行時間を計測\"\"\"
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = func(*args, **kwargs)
+            elapsed = time.time() - start
+            
+            func_name = func.__name__
+            if func_name not in self.measurements:
+                self.measurements[func_name] = []
+            self.measurements[func_name].append(elapsed)
+            
+            return result
+        return wrapper
+    
+    def generate_report(self) -> Dict[str, Any]:
+        \"\"\"詳細レポート生成\"\"\"
+        report = {\"skill\": self.skill_name, \"stages\": {}, \"summary\": {}}
+        total = sum(sum(t) for t in self.measurements.values())
+        
+        for stage, timings in self.measurements.items():
+            avg = sum(timings) / len(timings)
+            report[\"stages\"][stage] = {
+                \"count\": len(timings),
+                \"avg_ms\": avg * 1000,
+                \"min_ms\": min(timings) * 1000,
+                \"max_ms\": max(timings) * 1000,
+                \"pct\": (sum(timings) / total * 100) if total > 0 else 0
+            }
+        
+        report[\"summary\"][\"total_ms\"] = total * 1000
+        report[\"summary\"][\"status\"] = (
+            \"Excellent\" if total < self.target_time * 0.7 else
+            \"Good\" if total < self.target_time else
+            \"Needs Optimization\"
+        )
+        
+        return report
+    
+    def print_report(self):
+        \"\"\"見やすいレポート表示\"\"\"
+        report = self.generate_report()
+        print(f\"\\n{'='*60}\\n📊 {report['skill']}\\n{'='*60}\")
+        
+        for stage, metrics in report[\"stages\"].items():
+            print(f\"{stage}: {metrics['avg_ms']:.1f}ms avg \"\n                  f\"({metrics['pct']:.1f}%) - Min: {metrics['min_ms']:.1f}ms, \"\n                  f\"Max: {metrics['max_ms']:.1f}ms\")
+        
+        summary = report[\"summary\"]
+        print(f\"\\n⏱️  Total: {summary['total_ms']:.1f}ms | Status: {summary['status']}\")
+        print(f\"{'='*60}\\n\")
+
+# 使用例
+if __name__ == \"__main__\":
+    profiler = PerformanceProfiler(\"analyze-code-quality\")
+    
+    @profiler.measure
+    def validate(): time.sleep(0.1)
+    
+    @profiler.measure  
+    def build_prompt(): time.sleep(0.05)
+    
+    @profiler.measure
+    def call_llm(): time.sleep(2.0)
+    
+    @profiler.measure
+    def format(): time.sleep(0.1)
+    
+    # 実行＆レポート
+    validate()
+    build_prompt()
+    call_llm()
+    format()
+    profiler.print_report()
+```
+
 ### 段階別の最適化
 
 ```python

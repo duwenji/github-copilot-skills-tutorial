@@ -177,6 +177,59 @@ Copilot Skills Portal
 
 ## スキル共有のベストプラクティス
 
+### Practice 0: 補助リソース（スクリプト・テンプレート）の管理戦略
+
+**補助リソースの種類：**
+
+```yaml
+補助スクリプト:
+  - 入力値検証: validate-input.py
+  - 出力形式変換: format-converter.sh
+  - テスト実行: test-harness.py
+  - パフォーマンス計測: performance-profiler.js
+
+テンプレート・サンプル:
+  - LLMプロンプトテンプレート: prompt-template.md
+  - 出力形式スキーマ: output-schema.json
+  - テストケース集: test-cases.json
+  - チェックリスト: checklist.md
+
+ツール・ユーティリティ:
+  - 互換性チェッカー: compatibility-checker.py
+  - パフォーマンス診断: performance-analyzer.py
+  - バージョン管理: version-manager.sh
+```
+
+**スキル配布時の構成例：**
+
+```
+skills/analyze-code-quality/
+├── SKILL.md                    # スキル定義
+├── README.md                   # オーバービュー
+├── scripts/                    # 補助スクリプト
+│   ├── validate_input.py
+│   ├── format_output.py
+│   └── test_harness.py
+├── templates/                  # テンプレート
+│   ├── output-schema.json
+│   └── test-cases.json
+├── tools/                      # 診断ツール
+│   └── performance-profiler.py
+└── docs/                       # ドキュメント
+    ├── API.md
+    ├── EXAMPLES.md
+    └── TROUBLESHOOTING.md
+```
+
+**配布方法別のファイル含有:**
+
+| 配布方法 | 補助ファイル | 強力な機能 |
+|--------|-----------|----------|
+| **GitHub リポジトリ** | すべて | CI/CD統合、バージョン管理 |
+| **npm パッケージ** | scripts/, templates/ | 自動インストール |
+| **Python パッケージ** | scripts/, templates/ | pip でインストール |
+| **組織ポータル** | すべて | ビジュアルガイド |
+
 ### Practice 1: 明確な命名規則
 
 ```

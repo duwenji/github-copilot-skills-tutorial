@@ -147,6 +147,117 @@ validate_skill_definition('skill-definition.json')
   ├─ parameters
   ├─ prompt (system + template)
   └─ outputFormat
+□ 補助リソース（スクリプト等）のチェック
+  ├─ scripts/ ディレクトリが存在するか
+  ├─ 各スクリプトが実行可能か（chmod +x）
+  ├─ スクリプト言語がドキュメント化されているか
+  └─ 依存パッケージがrequirements.txt等で指定されているか
+□ templates/ フォルダが存在する場合
+  ├─ 各テンプレートが有効な形式か
+  └─ パス参照が正しいか
+```
+
+### 補助スクリプト：自動検証ツール（skill-validator.py）
+
+スキル定義と補助リソースを自動で検証するツール：
+
+```python
+#!/usr/bin/env python3
+"""Skill definition validator with auxiliary resource checks"""
+
+import json
+import os
+import re
+import sys
+from pathlib import Path
+
+class SkillValidator:
+    """スキル定義と補助リソースを検証"""
+    
+    REQUIRED = ['id', 'version', 'name', 'description', 'parameters', 'prompt', 'outputFormat']
+    ID_PATTERN = re.compile(r'^[a-z0-9-]+$')
+    VERSION_PATTERN = re.compile(r'^\d+\.\d+\.\d+$')
+    
+    def __init__(self, skill_dir: str):
+        self.skill_dir = Path(skill_dir)
+        self.skill_file = self.skill_dir / 'SKILL.md.json'
+        self.errors = []
+        self.warnings = []
+    
+    def validate(self) -> bool:
+        """検証実行"""
+        if not self.skill_file.exists():
+            self.errors.append(f"❌ Skill file not found: {self.skill_file}")
+            return False
+        
+        try:
+            with open(self.skill_file) as f:
+                self.skill = json.load(f)
+        except json.JSONDecodeError as e:
+            self.errors.append(f"❌ Invalid JSON: {e}")
+            return False
+        
+        # 各検証を実行
+        self._validate_required_fields()
+        self._validate_id_format()
+        self._validate_version_format()
+        self._validate_auxiliary_resources()
+        
+        return len(self.errors) == 0
+    
+    def _validate_required_fields(self):
+        """必須フィールド確認"""
+        for field in self.REQUIRED:
+            if field not in self.skill:
+                self.errors.append(f"❌ Missing field: {field}")
+    
+    def _validate_id_format(self):
+        """ID形式確認"""
+        skill_id = self.skill.get('id', '')
+        if not self.ID_PATTERN.match(skill_id):
+            self.errors.append(f"❌ Invalid ID format: {skill_id}")
+    
+    def _validate_version_format(self):
+        """バージョン形式確認"""
+        version = self.skill.get('version', '')
+        if not self.VERSION_PATTERN.match(version):
+            self.errors.append(f"❌ Invalid version format: {version}")
+    
+    def _validate_auxiliary_resources(self):
+        """補助リソース確認"""
+        aux = self.skill.get('auxiliaryResources', {})
+        if not aux:
+            return
+        
+        # スクリプト確認
+        scripts = aux.get('scripts', [])
+        scripts_dir = self.skill_dir / 'scripts'
+        
+        for script in scripts:
+            script_name = script.get('name')
+            script_path = scripts_dir / script_name
+            
+            if not script_path.exists():
+                self.warnings.append(f"⚠️  Script not found: {script_path}")
+            elif not os.access(script_path, os.X_OK):
+                self.warnings.append(f"⚠️  Script not executable: {script_path}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python skill-validator.py <skill-directory>")
+        sys.exit(1)
+    
+    validator = SkillValidator(sys.argv[1])
+    is_valid = validator.validate()
+    print(f"Valid: {is_valid} (Errors: {len(validator.errors)}, Warnings: {len(validator.warnings)})")
+    sys.exit(0 if is_valid else 1)
+```
+
+**使用例：**
+
+```bash
+python3 skill-validator.py skills/analyze-code-quality/
+```
 
 □ パラメータの定義が正しい
   ├─ type が正当な値
