@@ -196,6 +196,57 @@ tutorial-quiz-set/
 
 ## 使用例
 
+### ⚡ 最も簡単な自動生成（ワンコマンド）
+
+最小限のパラメータだけで、分析→生成→検証まで自動実行：
+
+**ユーザー入力：**
+```
+action: "generate"
+doc_path: "docs"
+```
+
+**結果：** 以下が自動生成されます
+```
+tutorial-quiz-set/
+├── metadata.json          ← 親シリーズ情報
+├── fundamentals/quiz.json ← 自動クイズ生成（21問）
+├── basics/quiz.json        ← 自動クイズ生成（21問）
+├── comparison/quiz.json    ← 自動クイズ生成（21問）
+├── implementation/quiz.json ← 自動クイズ生成（21問）
+└── README.md              ← 生成レポート
+```
+
+**出力例 (metadata.json):**
+```json
+{
+  "series": {
+    "id": "github-copilot-skills-tutorial",
+    "name": "GitHub Copilot Skills チュートリアル",
+    "questionCount": 84,
+    "childCount": 4
+  },
+  "quizSets": [
+    {
+      "id": "fundamentals",
+      "name": "スキル形式の理解",
+      "order": 1,
+      "questionCount": 21,
+      "dataPath": "fundamentals/quiz.json"
+    },
+    {
+      "id": "basics",
+      "name": "基本概念",
+      "order": 2,
+      "questionCount": 21,
+      "dataPath": "basics/quiz.json"
+    }
+  ]
+}
+```
+
+---
+
 ### 基本的なワークフロー
 
 #### 1️⃣ Step 1: コンテンツ分析
