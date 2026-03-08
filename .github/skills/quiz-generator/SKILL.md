@@ -971,9 +971,11 @@ outputDir: "tutorial"
 
 **フィールド説明**:
 - `questions[].id` - セクション内での問題番号（連番 1～15）
-- `questions[].correctAnswer` - 正解（A/B/C/D のいずれか 固定）
+- `questions[].correctAnswer` - **正解（A/B/C/D のいずれか 1つのみ 固定）** ⚠️ 複数選択非対応
 - `options[].id` - 選択肢の識別子（A/B/C/D 4つ固定）
 - `questions[].explanation` - 解説（検証時のみ自動生成、設定で有効化可能）
+
+⚠️ **重要：複数選択問題非対応** - クイズセット実行アプリが複数選択に対応していないため、生成ロジックは必ず**単一選択問題のみを生成**します。複数選択問題の生成リクエストは無視されます。
 
 詳細は [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) を参照してください。
 
@@ -1058,6 +1060,7 @@ outputDir: "tutorial"
 
 - ✅ **ID形式** - ケバブケース準拠 ([quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json))
 - ✅ **選択肢数** - 正確に 4 つ（A/B/C/D）が必須 ([question-schema.json](./schemas/question-schema.json))
+- ✅ **正答形式** - 複数選択非対応（A/B/C/D のいずれか **1つのみ**）
 - ✅ **難度値** - 有効な難度のみ（`beginner`, `intermediate`, `advanced`）
 - ✅ **階層構造** - level は 1（トップレベル）または 2（子セット）
 - ✅ **参照整合性** - 親セット・子セット関係が正しく定義される
