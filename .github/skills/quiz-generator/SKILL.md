@@ -1,6 +1,6 @@
 ---
 name: quiz-generator
-description: プロジェクト配下のドキュメントをクイズセット化しJSON形式で出力します。
+description: ドキュメントから段階的学習用クイズセットを自動生成。セクション進行に応じて難度が段階的に上昇する複数学習パスを構成。JSON形式で出力対応。
 license: MIT
 ---
 
@@ -19,7 +19,7 @@ license: MIT
 | ✅ **自動生成** | ドキュメント構造を解析し、シリーズとクイズセットを自動生成 |
 | ✅ **単一管理** | すべてのクイズを `tutorial/` に一元管理 |
 | ✅ **段階的学習** | beginner → intermediate → advanced で難度を段階化 |
-| ✅ **複数形式** | JSON, Markdown での出力に対応 |
+| ✅ **JSON出力** | 標準化されたJSON形式で出力対応 |
 | ✅ **拡張性** | 新規セクション追加時も自動的に対応 |
 
 ---
@@ -47,15 +47,19 @@ output_format: "json"
 **結果：**
 ```
 tutorial/github-copilot-skills-tutorial/
-├── metadata.json
-├── fundamentals/quiz.json
-├── basics/quiz.json
-├── comparison/quiz.json
-├── implementation/quiz.json
-├── advanced/quiz.json
-├── VALIDATION_REPORT.md
-└── README.md
+├── quizSets.json                ← SPA Quiz App 用メタデータインデックス
+├── metadata.json                ← シリーズ全体のメタデータ
+├── fundamentals.json            ← Section 1（15問）
+├── basics.json                  ← Section 2（12問）
+├── comparison.json              ← Section 3（12問）
+├── implementation.json          ← Section 4（12問）
+├── advanced.json                ← Section 5（12問）
+├── advanced-topics.json         ← Section 6（12問）
+├── VALIDATION_REPORT.md         ← 品質検証レポート
+└── .analysis.json               ← 分析結果（参照用）
 ```
+
+**データフォーマット準拠：** すべてのファイルは [JSON スキーマ](./schemas/) に準拠し、SPA Quiz App で直接利用可能です。
 
 ### 📊 段階的実行（カスタマイズ）
 
@@ -78,24 +82,55 @@ tutorial/github-copilot-skills-tutorial/
 
 **4ステップを自動で実行（ユーザー入力不要）**
 
+**データフォーマット準拠:** 出力は [DATA_FORMAT_SPECIFICATION.md](./DATA_FORMAT_SPECIFICATION.md) に完全準拠し、SPA Quiz App との統合を確保します。
+
 | パラメータ | 必須 | デフォルト | 説明 |
 |----------|------|----------|------|
 | `action` | ✅ | - | `"auto-flow"` に固定 |
 | `doc_path` | ✅ | - | ドキュメントフォルダ（例: `"docs"`) |
 | `target_audience` | | `"progressive"` | 難度対象: `"beginner"` / `"intermediate"` / `"advanced"` / `"progressive"` |
 | `difficulty_distribution` | | `"balanced"` | 難度配分: `"balanced"` / `"beginner_focused"` / `"advanced_focused"` |
-| `output_format` | | `"json"` | 出力形式: `"json"` / `"markdown"` / `"both"` |
-| `include_explanation` | | `true` | 各問の解説を含める |
+| `output_format` | | `"json"` | 出力形式: JSON のみ（データフォーマット仕様準拠） |
+| `include_explanation` | | `true` | 各問に日本語の詳細解説を含める |
 | `auto_section_filter` | | `true` | ドキュメント数が少ないセクションを自動除外 |
 | `min_docs_per_section` | | `1` | セクション保持の最小ドキュメント数 |
-| `generate_validation_report` | | `true` | 生成完了後に検証レポートを生成 |
-| `verbose` | | `false` | 実行ログを詳細出力 |
+| `generate_validation_report` | | `true` | 生成完了後に検証レポート（VALIDATION_REPORT.md）を生成 |
+| `verbose` | | `false` | 実行ログを詳細出力（トラブルシューティング用） |
+
+#### 📋 target_audience の選択フロー
+
+**どの難度を選ぶ？**
+
+```
+┌─────────────────────────────────────────────┐
+│ 学習者のターゲット層は？                     │
+└─────────────────────────────────────────────┘
+         ├─→ 初心者のみ
+         │    → target_audience: "beginner"
+         │
+         ├─→ 経験者のみ  
+         │    → target_audience: "advanced"
+         │
+         └─→ 初心者～経験者（段階的）★推奨
+              → target_audience: "progressive"
+```
+
+**各値の選択基準：**
+
+| 値 | 難度配分 | 推奨シーン | 進行度合 |
+|----|---------|----------|----------|
+| `beginner` | 80% beginner, 15% intermediate, 5% advanced | 初心者対象のコース | 全セクション同じ |
+| `intermediate` | 30% beginner, 60% intermediate, 10% advanced | 基本を学んだ学習者 | 全セクション同じ |
+| `advanced` | 10% beginner, 30% intermediate, 60% advanced | 専門知識が必要な場面 | 全セクション同じ |
+| `progressive` | Section 1: 80% beginner→後半：50% advanced | 初心者から段階的に上達 | **セクション進行で自動上昇** ★推奨 |
+
+**重要：** `progressive` を選んだ場合、セクション番号が進むにつれて難度が自動的に上昇します。後から変更は困難なため、初期選択時に十分検討してください。
 
 **実行例：**
 ```yaml
 action: "auto-flow"
 doc_path: "docs"
-target_audience: "progressive"
+target_audience: "progressive"  # ← 段階的難度（推奨）
 output_format: "json"
 auto_section_filter: true
 min_docs_per_section: 1
@@ -122,7 +157,7 @@ min_docs_per_section: 1
 |----------|------|----------|------|
 | `action` | ✅ | - | `"generate"` に固定 |
 | `doc_path` | ✅ | - | ドキュメントフォルダ（例: `"docs"`) |
-| `output_format` | | `"json"` | 出力形式: `"json"` / `"markdown"` / `"both"` |
+| `output_format` | | `"json"` | 出力形式: JSON のみ（固定値） |
 | `target_audience` | | `"intermediate"` | 難度対象: `"beginner"` / `"intermediate"` / `"advanced"` / `"progressive"` |
 | `difficulty_distribution` | | `"balanced"` | 難度配分: `"balanced"` / `"beginner_focused"` / `"advanced_focused"` |
 | `question_count` | | `"auto"` | 全体の問題数（`"auto"` で自動計算） |
@@ -290,6 +325,44 @@ docs/
 
 複数ステップに分けて実行することで、各段階でユーザーが検証・調整可能です。
 
+### Step 0: 実行前チェックリスト（推奨）
+
+**実行を開始する前に、以下を確認してください。このステップを実施することで、多くの潜在的な問題を事前に防止できます。**
+
+#### ✅ ドキュメント準備確認
+
+- [ ] `docs/` フォルダが存在するか
+- [ ] 各セクションフォルダに最低 1 個のドキュメント（`.md`）があるか
+- [ ] すべてのドキュメントに H1 見出し（`# タイトル`）が存在するか
+- [ ] フォルダ構造が `01-section/`, `02-section/` のように番号プレフィックスで始まっているか（推奨）
+
+**確認コマンド例（PowerShell）：**
+```powershell
+# ドキュメント数をカウント
+Get-ChildItem docs -Recurse -Filter "*.md" | Measure-Object
+
+# セクションごとのドキュメント数
+Get-ChildItem docs -Directory | ForEach-Object { 
+  Write-Host "$($_.Name): $(@(Get-ChildItem $_.FullName -Filter '*.md').Count) files" 
+}
+```
+
+#### ✅ パラメータ検証
+
+- [ ] `doc_path` が正確か（例：`"docs"`）
+- [ ] `target_audience` が有効値か（`beginner|intermediate|advanced|progressive`）
+- [ ] 段階実行の場合、JSON ファイルパスが正確か
+- [ ] `output_format` が有効値か（`json|markdown|both`）
+
+#### ✅ 出力ディレクトリ確認
+
+- [ ] `tutorial/` などの出力先フォルダへの書き込み権限があるか
+- [ ] ディスク容量は十分か（大規模プロジェクトの場合、数MB必要）
+
+**これらがすべて確認できたら、Step 1 に進みます。**
+
+---
+
 ### Step 1: コンテンツ分析
 
 ドキュメント構造を解析し、シリーズ構成の候補を生成します。
@@ -314,9 +387,37 @@ doc_path: "docs"
 
 ---
 
-### Step 2: シリーズ構成確定（オプション）
+### Step 2: シリーズ構成確定（スキップ可能）
 
-Step 1 の分析結果に対して、セクション順序や名前を手動で調整します。調整が不要な場合は、このステップをスキップして Step 3 に進めます。
+Step 1 の分析結果に対して、セクション順序や名前を手動で調整します。
+
+#### 実行判定フロー
+
+**このステップを実施するべきか？**
+
+```
+¿ ドキュメント構造
+  │
+  ├─→ [YES] シンプル（30個以下のドキュメント）
+  │         かつセクション名が大意を伝えている
+  │         → Step 2 をスキップ、Step 3 へ直進
+  │
+  ├─→ [YES] セクション名や順序に疑問がある
+  │         → Step 2 を実施して調整
+  │
+  └─→ [YES] 特定セクションをコースから除外したい
+            → Step 2 を実施（必須）
+```
+
+**判定基準：**
+
+| 判定項目 | Step 2 実施推奨 | 理由 |
+|---------|-------------|------|
+| **セクション名が不明確** | ✅ YES | UI 表示のため、分かりやすい名前が必須 |
+| **セクション順序を変更したい** | ✅ YES | 学習フローを最適化 |
+| **特定セクションを除外したい** | 🔴 必須 | enabled: false で除外指定 |
+| **ドキュメント構造がシンプル** | ❌ NO | 自動判断で十分正確 |
+| **セクション名が十分な場合** | ❌ NO | 時間短縮のためスキップ推奨 |
 
 **実行パラメータ：**
 ```yaml
@@ -347,7 +448,7 @@ adjustments:
 
 ### Step 3: クイズセット生成
 
-確定した構成に基づいて、各セクションのクイズを生成します。生成されたデータは [JSON スキーマ](./schemas/) に準拠します。
+確定した構成に基づいて、各セクションのクイズを生成します。生成されたデータは [JSON スキーマ](./schemas/) と [データフォーマット仕様](./DATA_FORMAT_SPECIFICATION.md) に準拠します。
 
 **実行パラメータ（段階的難度設定例）：**
 ```yaml
@@ -359,30 +460,38 @@ output_format: "json"
 include_explanation: true
 ```
 
-**出力ファイル：**
+**出力ファイル構成：**
+
 ```
 tutorial/github-copilot-skills-tutorial/
-├── metadata.json              ← 親シリーズ + セクション一覧
-├── fundamentals/quiz.json     ← Section 1（主にbeginner）
-├── basics/quiz.json           ← Section 2（beginnerからintermediate）
-├── comparison/quiz.json       ← Section 3（intermediateからadvanced）
-├── implementation/quiz.json   ← Section 4（advancedが多い）
-├── advanced/quiz.json         ← Section 5（mainly advanced）
-├── .analysis.json             ← 分析結果（参照用）
-└── README.md                  ← 生成レポート
+├── quizSets.json                    ← SPA Quiz App 用メタデータインデックス（必須）
+├── metadata.json                    ← シリーズ全体のメタデータ
+├── fundamentals.json                ← Section 1（15問，難度：80% beginner）
+├── basics.json                      ← Section 2（12問，難度：50% beginner）
+├── comparison.json                  ← Section 3（12問，難度：20% beginner）
+├── implementation.json              ← Section 4（12問，難度：10% beginner）
+├── advanced.json                    ← Section 5（12問，難度：0% beginner）
+├── advanced-topics.json             ← Section 6（12問，難度：expert混在）
+├── VALIDATION_REPORT.md             ← 品質検証レポート
+└── .analysis.json                   ← 分析結果（参照用）
 ```
 
-**生成内容：**
-- 21問/セクション（デフォルト）
-- 段階的に難度が上昇
-- 各問に日本語の解説付き
-- すべて [JSON スキーマ](./schemas/) 準拠
+**生成内容の仕様準拠性：**
+- ✅ 出力ファイル数：セクション数 + メタデータ 1 + インデックス 1
+- ✅ 問題形式：`quizSets.json` 仕様（id, name, description, category, icon, questionCount など）
+- ✅ 質問形式：[データフォーマット仕様](./DATA_FORMAT_SPECIFICATION.md) 準拠
+  - `questions[]` 配列
+  - `id`, `question`, `options[]`（4つ固定）, `correctAnswer` (A/B/C/D), `explanation`
+- ✅ 総問題数：約 71 問（21問/セクション × 段階的難度適用）
+- ✅ 難度分布：progressive 設定で自動段階化
+- ✅ 各問に日本語の詳細な解説付き
+- ✅ JSON スキーマバージョン 1.0.0 準拠
 
 ---
 
 ### Step 4: 検証（オプション）
 
-すべてのクイズセットが正しく生成されたか品質を検証します。**この段階は省略可能です。**
+すべてのクイズセットが正しく生成されたか品質を検証します。**この段階は省略可能ですが、本番運用時には推奨されます。**
 
 **実行パラメータ：**
 ```yaml
@@ -392,13 +501,40 @@ outputDir: "tutorial"
 
 **出力ファイル：** `tutorial/{シリーズID}/VALIDATION_REPORT.md`
 
-**検証内容：**
-- ✅ 生成されたクイズセット数
-- ✅ 各セクションの問題数・難度分布
-- ✅ メタデータの整合性
-- ✅ JSON スキーマ準拠性
-- ✅ ID形式（ケバブケース）
-- ✅ 必須フィールドの存在
+**検証内容（データフォーマット仕様準拠確認）：**
+
+#### メタデータ検証
+- ✅ `quizSets.json` のスキーマ準拠性
+- ✅ 各セット：`id`, `name`, `description`, `category`, `icon`, `questionCount` 等の必須フィールド
+- ✅ `dataPath` が指定ファイルに対応
+- ✅ `parentId`, `group`, `level`, `order` の階層構造整合性
+- ✅ `id` がケバブケース形式（例：`github-copilot-skills-fundamentals`）
+
+#### クイズセット検証
+- ✅ 各 `{section}.json` の `questions[]` 配列構造
+- ✅ 各質問の必須フィールド：`id`, `question`, `options[]` (4個), `correctAnswer` (A/B/C/D), `explanation`
+- ✅ オプション形式：`{id: "A", text: "..."}`
+- ✅ 回答の一意性（正解は 1 つのみ）
+- ✅ 難度分布期待値への準拠（progressive 時の上昇幅）
+
+#### 統合検証
+- ✅ セクション数とメタデータの一致
+- ✅ 総問題数の計算正確性
+- ✅ ファイルの完全性（すべてのセクションが出力されているか）
+- ✅ ドキュメントと出力の対応関係
+
+**検証結果レポート例：**
+```
+✅ 検証完了: このクイズセットは品質要件を満たしています
+
+総合スコア: 91/100（優秀）
+├── 難度進行: 95/100 ✅
+├── 内容網羅性: 92/100 ✅
+├── 問題質: 88/100 ✅
+└── データフォーマット準拠: 100/100 ✅
+
+本クイズセットの使用開始を承認します
+```
 
 ---
 
@@ -407,52 +543,60 @@ outputDir: "tutorial"
 ### 対話型オートメーション（auto-flow）
 
 ```
-┌─────────────────────────────────────────────────┐
-│   action: "auto-flow"                           │
-│   doc_path: "docs"                              │
-│   target_audience: "progressive"                │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│   action: "auto-flow"                               │
+│   doc_path: "docs"                                  │
+│   target_audience: "progressive"                    │
+│   output_format: "json"                             │
+└──────────────────────────────────────────────────────┘
           ↓
-┌─────────────────────────────────────────────────┐
-│ [内部Step 1] ドキュメント構造を自動解析          │
-│ ・フォルダ検出                                   │
-│ ・ドキュメント数カウント                         │
-│ ・セクション順序決定（プレフィックス数字基準）   │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ [内部Step 1] ドキュメント構造を自動解析              │
+│ ・フォルダ検出（01-xxx, 02-xxx パターン）            │
+│ ・ドキュメント数カウント                             │
+│ ・セクション順序決定（プレフィックス数字基準）       │
+└──────────────────────────────────────────────────────┘
           ↓
-┌─────────────────────────────────────────────────┐
-│ [内部Step 2] セクション自動最適化                │
-│ ・min_docs_per_section 未満は自動除外           │
-│ ・セクション名を自動生成（LLM利用）              │
-│ ・ID をケバブケース化                            │
-│ ★ ユーザー判断なし                              │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ [内部Step 2] セクション自動最適化                    │
+│ ・min_docs_per_section 未満は自動除外               │
+│ ・セクション名を自動生成（LLM利用）                  │
+│ ・ID をケバブケース化                                │
+│ ・メタデータ構造を構築（親・子関係）                 │
+│ ★ ユーザー判断なし                                  │
+└──────────────────────────────────────────────────────┘
           ↓
-┌─────────────────────────────────────────────────┐
-│ [内部Step 3] クイズセット生成                    │
-│ ・難度分布を自動決定（progressive対応）         │
-│ ・各セクションで問題を生成                       │
-│ ・メタデータ統合                                 │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ [内部Step 3] クイズセット生成                        │
+│ ・難度分布を自動決定（progressive対応）             │
+│ ・各セクション 12～15 問生成                         │
+│ ・question 形式：id, question, options[], answer    │
+│ ・quizSets.json メタデータを生成                     │
+│ ✓ データフォーマット仕様準拠                         │
+└──────────────────────────────────────────────────────┘
           ↓
-┌─────────────────────────────────────────────────┐
-│ [内部Step 4] 生成品質を自動検証                  │
-│ ・JSON スキーマ対応確認                          │
-│ ・難度分布検証                                   │
-│ ・メタデータ整合性チェック                       │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ [内部Step 4] 生成品質を自動検証                      │
+│ ・JSON スキーマバージョン 1.0.0 準拠確認            │
+│ ・難度分布検証（期待値に対する準拠度）               │
+│ ・メタデータ整合性チェック（id, parentId等）        │
+│ ・必須フィールド検証                                 │
+│ ✓ 検証レポート（VALIDATION_REPORT.md）自動生成       │
+└──────────────────────────────────────────────────────┘
           ↓
-┌─────────────────────────────────────────────────┐
-│ 出力ファイル生成                                │
-│ tutorial/{シリーズID}/                          │
-│ ├── metadata.json                               │
-│ ├── {section}/quiz.json (複数)                  │
-│ ├── VALIDATION_REPORT.md                        │
-│ └── README.md                                   │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ 出力ファイル生成（完全準拠）                        │
+│ tutorial/{シリーズID}/                              │
+│ ├── quizSets.json          ← SPA 用インデックス    │
+│ ├── metadata.json          ← シリーズ全体メタ       │
+│ ├── {section}.json × N     ← 各セクション問題      │
+│ ├── VALIDATION_REPORT.md   ← 品質検証レポート      │
+│ └── .analysis.json         ← 分析結果参照用    │
+└──────────────────────────────────────────────────────┘
 ```
 
-**実行時間目安：** 3～5 秒（セクション数や質問数に依存）
+**実行時間目安：** 3～5 秒（セクション数により変動）  
+**データ準拠：** [データフォーマット仕様 v1.0.0](./DATA_FORMAT_SPECIFICATION.md)
 
 ---
 
@@ -471,9 +615,15 @@ outputDir: "tutorial"
 各セクションからクイズを生成 → 難度を段階的に適用 → メタデータ統合
         ↓
 tutorial/{シリーズID}/
+├── quizSets.json               ← SPA Quiz App 用メタデータインデックス
 ├── metadata.json
-├── {section}/quiz.json
-└── README.md
+├── fundamentals.json           ← 各セクションを個別 JSON ファイルで出力
+├── basics.json
+├── comparison.json
+├── implementation.json
+├── advanced.json
+├── advanced-topics.json
+└── VALIDATION_REPORT.md        ← 品質レポート
         ↓
   [Step 4: validate] ← オプション（品質確認）
   JSON スキーマ検証 → 難度分布確認 → レポート生成
@@ -490,13 +640,15 @@ tutorial/{シリーズID}/
 
 ---
 
-## 使用シナリオ
+## よくあるユースケース
 
 ---
 
-### 例0: 対話型オートメーション（推奨）
+### UC-1: 急いでいる（所要時間：3～5秒）
 
-分析→自動判断→生成→検証を **完全自動実行**：
+**パターン：** 分析→自動判断→生成→検証を完全自動実行
+
+**推奨：** `auto-flow` を実行
 
 ```yaml
 action: "auto-flow"
@@ -512,74 +664,31 @@ output_format: "json"
 - ✅ 難度分布を自動設定（progressive対応）
 - ✅ 生成結果を自動検証＋レポート生成
 
-**適用シーン：**
-- 最も簡潔に実行したい
-- セクション名や順序は自動判断に任せたい
-- ドキュメント構造が変わっても自動対応したい
-
 **実行時間：** 3～5秒
 
 **出力例：**
 ```
 tutorial/github-copilot-skills-tutorial/
-├── metadata.json
-├── fundamentals/quiz.json        (初級向け)
-├── basics/quiz.json              (初→中級)
-├── comparison/quiz.json          (中級)
-├── implementation/quiz.json      (中→上級)
-├── advanced/quiz.json            (上級向け)
-├── VALIDATION_REPORT.md          ← 自動生成レポート
-└── README.md
+├── quizSets.json                 ← SPA Quiz App 用メタデータインデックス
+├── metadata.json                 ← シリーズメタデータ
+├── fundamentals.json             (Section 1: 15問, ~初級)
+├── basics.json                   (Section 2: 12問, 初→中級)
+├── comparison.json               (Section 3: 12問, 中級)
+├── implementation.json           (Section 4: 12問, 中→上級)
+├── advanced.json                 (Section 5: 12問, 上級)
+├── advanced-topics.json          (Section 6: 12問, 上級→エキスパート)
+├── VALIDATION_REPORT.md          ← 自動生成品質レポート
+└── README.md                     （オプション）
 ```
-
-**オプション調整：**
-```yaml
-action: "auto-flow"
-doc_path: "docs"
-target_audience: "progressive"
-output_format: "json"
-auto_section_filter: true         # ← 少数ドキュメントで自動除外
-min_docs_per_section: 1           # ← 最小ドキュメント数
-generate_validation_report: true  # ← 検証レポート自動生成
-verbose: false                    # ← 詳細ログは出力しない
-```
+**データフォーマット準拠：** すべてのファイルが [DATA_FORMAT_SPECIFICATION.md](./DATA_FORMAT_SPECIFICATION.md) v1.0 に準拠
 
 ---
 
-### 例1: ワンコマンドで全セクションを生成
+### UC-2: セクション名をカスタマイズしたい（所要時間：1～2分）
 
-少ない手数で、すべてのセクションを段階的難度で生成：
+**パターン：** セクション名や順序を手動調整
 
-```yaml
-action: "generate"
-doc_path: "docs"
-target_audience: "progressive"
-output_format: "json"
-```
-
-**適用シーン：**
-- ドキュメント構造がシンプル
-- セクション名・順序を変更不要
-- 段階的学習が目的
-- 検証レポートは不要
-
-**出力例：**
-```
-tutorial/github-copilot-skills-tutorial/
-├── metadata.json
-├── fundamentals/quiz.json        (初級向け)
-├── basics/quiz.json              (初→中級)
-├── comparison/quiz.json          (中級)
-├── implementation/quiz.json      (中→上級)
-├── advanced/quiz.json            (上級向け)
-└── README.md
-```
-
----
-
-### 例2: 段階的実行で調整
-
-セクションのカスタマイズが必要な場合：
+**推奨：** 段階実行（Step 1→2→3）
 
 **Step 1: 分析**
 ```yaml
@@ -587,16 +696,21 @@ action: "analyze"
 doc_path: "docs"
 ```
 
-**Step 2: セクションを調整（上級トピックのみ除外）**
+**確認：** `.analysis.json` の結果をレビュー
+
+**Step 2: セクションを調整**
 ```yaml
 action: "configure"
 analysisFile: "tutorial/.analysis.json"
 adjustments:
+  seriesName: "修正後のシリーズ名"
   sections:
     - id: "fundamentals"
+      name: "修正後のセクション名"
+      order: 1
       enabled: true
     - id: "advanced-topics"
-      enabled: false    # ← 除外
+      enabled: false    # ← 除外する場合
 ```
 
 **Step 3: 生成**
@@ -606,46 +720,163 @@ configFile: "tutorial/.series-config.json"
 target_audience: "progressive"
 ```
 
+**実行時間：** 1～2分（調整内容による）
+
+**出力：** UC-1 と同じ形式（`quizSets.json` + 6 x flat JSON files）
+
 ---
 
-### 例3: 初心者向け＋少ない問題数
+### UC-3: 初心者向けコースを作りたい（所要時間：5秒）
+
+**パターン：** 初級向け難度設定 + 自動生成
+
+**推奨：** `auto-flow` + `target_audience` パラメータ
 
 ```yaml
-action: "generate"
+action: "auto-flow"
+doc_path: "docs"
+target_audience: "beginner"              # ← 初級向け固定
+difficulty_distribution: "beginner_focused"
+output_format: "json"
+```
+
+**特徴：**
+- ✅ 全セクション同じ難度レベル（beginner優位）
+- ✅ 難度分布：50% beginner, 40% intermediate, 10% advanced
+- ✅ セクション進行による難度上昇なし（すべて初級向け）
+
+**実行時間：** 5秒
+
+---
+
+### UC-4: 複数の学習パス（初級/上級）を作りたい（所要時間：10秒）
+
+**パターン：** 異なる難度レベルで複数回実行
+
+**推奨：** `auto-flow` を複数回実行
+
+**実行 1 回目：初級向け**
+```yaml
+action: "auto-flow"
 doc_path: "docs"
 target_audience: "beginner"
-question_count: 30
-difficulty_distribution: "beginner_focused"
+output_format: "json"
 ```
 
-**出力特性：**
-- 問題数: 30問（全セクション合計）
-- 難度: 50% beginner, 40% intermediate, 10% advanced
+**実行 2 回目：上級向け**
+```yaml
+action: "auto-flow"
+doc_path: "docs"
+target_audience: "advanced"
+output_format: "json"
+```
+
+**出力結果：**
+- 2 つの独立したクイズセット（難度が異なる）
+- UI で学習者が難度を選択可能
 
 ---
 
-### 例4: 複数形式で出力（JSON + Markdown）
+### UC-5: 細かい品質チェックを実施したい（所要時間：2～3分）
+
+**パターン：** 生成品質を詳細に検証
+
+**推奨：** 段階実行（Step 1→3→4）
 
 ```yaml
+# Step 1: 分析
+action: "analyze"
+doc_path: "docs"
+
+# Step 3: 生成（Step 2 をスキップ）
 action: "generate"
 configFile: "tutorial/.series-config.json"
-output_format: "both"
+target_audience: "progressive"
+
+# Step 4: 検証
+action: "validate"
+outputDir: "tutorial"
 ```
 
-**出力ファイル：**
-- `metadata.json`
-- `{section}/quiz.json`
-- `{section}/quiz.md` ← Markdown版も追加
+**出力：** `VALIDATION_REPORT.md` に詳細レポートを生成
 
----
+```markdown
+# Quiz Set Validation Report
 
-## 出力ファイル構造と仕様
+## Summary
+- Total Quiz Sets: 6
+- Total Questions: 126
+- Target Audience: progressive
+- Difficulty Distribution: balanced
+
+## Per-Section Details
+- fundamentals: 21 questions (beginner 100%)
+- basics: 21 questions (beginner 50%, intermediate 50%)
+- ...
+
+## Quality Checks
+- ✅ All metadata is valid
+- ✅ All question sets are valid
+- ✅ ID format: kebab-case compliant
+```
+
+### メタデータファイル: quizSets.json
+
+**ファイルパス：** `tutorial/{シリーズID}/quizSets.json`
+
+**用途：** SPA Quiz App が直接読み込む統合メタデータインデックス
+
+> **スキーマ**: [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) に準拠
+
+```json
+{
+  "quizSets": [
+    {
+      "id": "github-copilot-skills-tutorial",
+      "name": "GitHub Copilot Skills チュートリアル",
+      "description": "基礎から実装、応用活用までを段階的に学ぶ総合学習パス",
+      "category": "GitHub Copilot",
+      "icon": "🚀",
+      "questionCount": 71,
+      "difficulty": "beginner to advanced",
+      "dataPath": null,
+      "parentId": null,
+      "group": "github-copilot-skills-series",
+      "level": 1,
+      "order": 1
+    },
+    {
+      "id": "github-copilot-skills-fundamentals",
+      "name": "基礎：スキル形式の選択と実装",
+      "description": "Agent Skillsの標準化、対応プラットフォーム、実装形式の選択",
+      "questionCount": 15,
+      "difficulty": "beginner",
+      "dataPath": "github-copilot-skills-tutorial/fundamentals.json",
+      "parentId": "github-copilot-skills-tutorial",
+      "group": "github-copilot-skills-series",
+      "level": 2,
+      "order": 1
+    },
+    {
+      "id": "github-copilot-skills-basics",
+      "name": "基礎：スキルの基本概念と価値",
+      "description": "スキルの定義、実装メリット、プラットフォーム統合",
+      "questionCount": 12,
+      "difficulty": "beginner to intermediate",
+      "dataPath": "github-copilot-skills-tutorial/basics.json",
+      "parentId": "github-copilot-skills-tutorial",
+      "level": 2,
+      "order": 2
+    }
+  ]
+}
+```
 
 ### メタデータファイル: metadata.json
 
 **ファイルパス：** `tutorial/{シリーズID}/metadata.json`
 
-**用途：** 親シリーズとセクション一覧の統合管理
+**用途：** シリーズ全体の統計情報・管理メトデータ
 
 > **スキーマ**: [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) に準拠
 
@@ -656,29 +887,19 @@ output_format: "both"
     "name": "GitHub Copilot Skills チュートリアル",
     "level": 1,
     "parentId": null,
-    "questionCount": 126,
+    "questionCount": 71,
     "childCount": 6
   },
   "quizSets": [
     {
-      "id": "fundamentals",
-      "name": "スキル形式の理解",
+      "id": "github-copilot-skills-fundamentals",
+      "name": "基礎：スキル形式の選択と実装",
       "level": 2,
       "parentId": "github-copilot-skills-tutorial",
       "order": 1,
-      "questionCount": 21,
+      "questionCount": 15,
       "difficulty": "beginner",
-      "dataPath": "fundamentals/quiz.json"
-    },
-    {
-      "id": "basics",
-      "name": "基本概念",
-      "level": 2,
-      "parentId": "github-copilot-skills-tutorial",
-      "order": 2,
-      "questionCount": 21,
-      "difficulty": "beginner to intermediate",
-      "dataPath": "basics/quiz.json"
+      "dataPath": "fundamentals.json"
     }
   ]
 }
@@ -686,28 +907,31 @@ output_format: "both"
 
 ---
 
-### クイズファイル: {section}/quiz.json
+### クイズファイル: {section}.json
 
-**ファイルパス：** `tutorial/{シリーズID}/{section}/quiz.json`
+**ファイルパス：** `tutorial/{シリーズID}/{section}.json` (e.g., `fundamentals.json`, `basics.json`)
 
-**用途：** 各セクションの問題データ
+**用途：** 各セクションの問題データを格納
 
-> **スキーマ**: [question-set-schema.json](./schemas/question-set-schema.json) に準拠
+> **スキーマ**: [question-set-schema.json](./schemas/question-set-schema.json) に準拠  
 > **個別問題**: [question-schema.json](./schemas/question-schema.json) に準拠
+
+**ファイル一覧：**
+- `fundamentals.json` - Section 1: 15問（基礎概念）
+- `basics.json` - Section 2: 12問（基本実装）
+- `comparison.json` - Section 3: 12問（比較・選択）
+- `implementation.json` - Section 4: 12問（実装手法）
+- `advanced.json` - Section 5: 12問（応用・チーム活用）
+- `advanced-topics.json` - Section 6: 12問（高度な設計パターン）
+
+**形式例（fundamentals.json）：**
 
 ```json
 {
-  "metadata": {
-    "generatedAt": "2026-03-08T10:00:00Z",
-    "version": "2.0",
-    "sourcePath": "docs/01-basics",
-    "seriesId": "github-copilot-skills-tutorial",
-    "seriesName": "GitHub Copilot Skills チュートリアル"
-  },
   "questions": [
     {
       "id": 1,
-      "question": "GitHub Copilot Skills とは、どのような仕組みですか？",
+      "question": "GitHub Copilot Agent Skills の主な特徴は何ですか？",
       "options": [
         {
           "id": "A",
@@ -715,7 +939,7 @@ output_format: "both"
         },
         {
           "id": "B",
-          "text": "特定のドメイン知識をプロンプト+ドキュメントで定義するもの"
+          "text": "特定ドメインの知識をプロンプト+ドキュメントで定義するもの"
         },
         {
           "id": "C",
@@ -723,11 +947,11 @@ output_format: "both"
         },
         {
           "id": "D",
-          "text": "ユーザーの VS Code 拡張機能"
+          "text": "ユーザーの VS Code 拡張機能の集合"
         }
       ],
       "correctAnswer": "B",
-      "explanation": "Skills は、プロンプトやドキュメントを組み合わせて、特定分野の知識をCopilot に教えるものです..."
+      "explanation": "Agent Skills は、プロンプトやドキュメントを組み合わせて、特定分野の知識を Copilot に教えるための標準化フォーマットです。これにより、チーム全体で知識を共有し、再利用可能な学習リソースを作成できます。"
     },
     {
       "id": 2,
@@ -746,11 +970,10 @@ output_format: "both"
 ```
 
 **フィールド説明**:
-- `metadata.seriesId` - 所属するシリーズのID
-- `metadata.seriesName` - 所属するシリーズの名前
-- `metadata.sourcePath` - 生成元のドキュメントパス
-- `questions[].id` - セクション内での問題番号（連番）
-- `questions[].correctAnswer` - 正解（A/B/C/D のいずれか）
+- `questions[].id` - セクション内での問題番号（連番 1～15）
+- `questions[].correctAnswer` - 正解（A/B/C/D のいずれか 固定）
+- `options[].id` - 選択肢の識別子（A/B/C/D 4つ固定）
+- `questions[].explanation` - 解説（検証時のみ自動生成、設定で有効化可能）
 
 詳細は [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) を参照してください。
 
@@ -801,18 +1024,21 @@ output_format: "both"
 **構造の利点：**
 
 1. **関心の分離** - メタデータ（表示・管理用）と問題データ（実行用）を分離
-   - UI は `metadata.json` から全情報を取得
-   - 学習アプリは各 `quiz.json` から問題データを取得
+   - SPA は `quizSets.json` から全体構造と各セクションの参照を取得
+   - 学習アプリは各 `*.json`（fundamentals.json 等）から問題データを取得
 
 2. **保守性** - メタデータ修正時にクイズJSONを編集不要
-   - セクション名の変更 → `metadata.json` のみ更新
+   - セクション名の変更 → `quizSets.json` と `metadata.json` のみ更新
    - 問題データは変更なし
 
-3. **拡張性** - 新しいクイズセット追加時は`metadata.json`に追記するだけ
-   - 新セクション追加 → `metadata.json` の `quizSets` に 1 行追加
-   - `{section}/quiz.json` を作成
+3. **拡張性** - 新しいクイズセット追加時は `quizSets.json` に追記するだけ
+   - 新セクション追加 → `quizSets.json` の `quizSets` に 1 項目追加
+   - `{section-name}.json` ファイルを作成（新しいセクション用）
 
-4. **UI連携** - SPAフロントエンドは`metadata.json`から一括に情報を取得
+4. **UI連携** - SPAフロントエンドは`quizSets.json`から直接メタデータを読み込み
+   - ナビゲーション構築
+   - セクション進捗管理
+   - 統計情報の表示
    - ナビゲーション構築
    - セクション進捗管理
    - 統計情報の表示
@@ -852,9 +1078,10 @@ output_format: "both"
 
 | ファイル | スキーマ | 検証内容 |
 |---------|---------|----------|
-| `metadata.json` | [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) | ID形式、難度値、順序番号、parent-child関係 |
-| `{section}/quiz.json` | [question-set-schema.json](./schemas/question-set-schema.json) | 問題配列の構造、メタデータ |
-| 個別問題 | [question-schema.json](./schemas/question-schema.json) | 選択肢数（4つ必須）、ID形式、正答の妥当性 |
+| `quizSets.json` | [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) | 階層構造、ID形式、難度値、parent-child関係 |
+| `metadata.json` | [quizset-metadata-schema.json](./schemas/quizset-metadata-schema.json) | シリーズ・セクション関係、questionCount |
+| `{section}.json` | [question-set-schema.json](./schemas/question-set-schema.json) | 問題配列の構造、各問題の完全性 |
+| 個別問題 | [question-schema.json](./schemas/question-schema.json) | 選択肢数（4つ必須）、ID形式（A/B/C/D）、正答の妥当性 |
 
 詳細は [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) を参照してください。
 
@@ -924,7 +1151,7 @@ difficulty_distribution: "beginner_focused"  # ← 初級向けに変更
 
 ## 参考資料
 
-| 資料 | 内容 |
+| 資料 | 用途 |
 |----|----|
 | [データフォーマット仕様書](./DATA_FORMAT_SPECIFICATION.md) | クイズデータの詳細仕様、ネーミング規則、FAQ など |
 | [question-schema.json](./schemas/question-schema.json) | 個別問題の JSON Schema (Draft-07) |
