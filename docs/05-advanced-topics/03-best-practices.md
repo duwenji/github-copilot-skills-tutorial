@@ -702,6 +702,262 @@ Q4: 運用効率化
 ✓ 複合スキルや API 統合ができる
 ✓ ベストプラクティスを実践できる
 
+---
+
+## スキル作成のベストプラクティス
+
+### 1. 命名規則（Naming Conventions）
+
+#### ルール
+
+```
+推奨：動名詞形（verb + -ing）
+├─ processing-pdfs
+├─ analyzing-spreadsheets
+├─ managing-databases
+└─ testing-code
+
+許容：名詞句
+├─ pdf-processing
+├─ spreadsheet-analysis
+└─ database-management
+
+❌ 避けるべき
+├─ helper（曖昧）
+├─ utils（スコープ不明）
+├─ tools（汎用すぎ）
+├─ anthropic-helper（予約語）
+└─ claude-tools（予約語）
+```
+
+#### 効果
+
+```
+一貫性のあるネーミング
+├─ スキルの機能が一目で判断できる
+├─ 複数スキルを参照しやすい
+└─ 専門的な整理が可能
+
+例：チーム内スキル一覧
+processing-*
+├─ processing-pdfs
+├─ processing-csvs
+└─ processing-images
+
+analyzing-*
+├─ analyzing-code-quality
+├─ analyzing-performance
+└─ analyzing-security
+
+managing-*
+├─ managing-databases
+├─ managing-dependencies
+└─ managing-configurations
+```
+
+### 2. 簡潔さ（Conciseness）
+
+#### 原則：トークンは共有資源
+
+```
+SKILL.md 読み込み時点でのトークン効率：
+
+メタデータ（常に先読み）
+└─ ～100トークン
+
+SKILL.md 本文（スキル起動時）
+├─ 推奨：<500行
+├─ 上限：1000行
+└─ ～5000トークン
+
+参考資料（オンデマンド）
+├─ references/*.md
+└─ 不要な時は読まない
+```
+
+#### チェック項目
+
+```
+✓ 「このパラグラフは必須か？」
+├─ Claude は既にこれを知っているのか
+└─ 削除してもスキルは動作するか
+
+✓ 説明の冗長さを除去
+├─ 「PDFは Portable Document Format の略で...」
+│   → 削除（Claude は知っている）
+├─ 「Python の open() 関数で...」
+│   → 削除（詳細は不要）
+└─ 「with文を使ってきちんとファイルを閉じる」
+    → 簡略化：「with を使う」
+```
+
+### 3. モデル別テスト（Model-Specific Testing）
+
+#### テスト対象
+
+```
+Claude Haiku
+├─ 速度：⭐⭐⭐⭐⭐
+├─ 推論：⭐⭐
+│   問題：詳しい指示がないと簡潔に実行
+│   対策：具体的な例・ステップ・制約を明確に
+└─ 低コスト・高速
+
+Claude Sonnet
+├─ 速度：⭐⭐⭐⭐
+├─ 推論：⭐⭐⭐⭐
+│   バランスが取れた性能
+└─ 推奨モデル
+
+Claude Opus
+├─ 速度：⭐⭐⭐
+├─ 推論：⭐⭐⭐⭐⭐
+│   問題：オーバーエンジニアリングの危険
+│   対策：冗長な指示を削除
+└─ 複雑な タスク向け
+```
+
+#### テスト方法
+
+```
+ステップ1：Haiku でテスト
+└─ 「詳細さが足りている？」
+   - NO → 指示を明確化
+
+ステップ2：Sonnet でテスト
+└─ 「バランスが取れている？」
+
+ステップ3：Opus でテスト
+└─ 「オーバースペック設計がない？」
+   - YES → 不要な指示を削除
+
+結論：Haiku で成功 → 他のモデルも成功する傾向
+```
+
+### 4. Anti-Patterns（避けるべきパターン）
+
+#### Anti-Pattern 1: Windows パス
+
+```
+❌ Windows スタイル
+├─ scripts\helper.py
+├─ C:\path\to\skill
+└─ reference\guide.md
+
+✅ Unix スタイル（推奨）
+├─ scripts/helper.py
+├─ /path/to/skill
+└─ reference/guide.md
+```
+
+**理由**
+- Unix パスは全プラットフォームで動作
+- Windows パスは Unix で失敗
+
+#### Anti-Pattern 2: 過度な選択肢
+
+```
+❌ 複数アプローチの提示
+"You can use pypdf, pdfplumber, PyMuPDF, pdf2image, 
+ or several other libraries..."
+
+✅ デフォルト + エスケープハッチ
+"Use pdfplumber for text extraction.
+For scanned PDFs requiring OCR, use pdf2image 
+with pytesseract."
+```
+
+**メリット**
+- エージェントの判断負荷が減る
+- エスケープハッチで対応可能
+
+#### Anti-Pattern 3: 時間依存情報
+
+```
+❌ 期限付き情報（すぐ陳腐化）
+"If you're doing this before August 2025, 
+use the old API."
+
+✅ 履歴セクション
+"## Current method
+Use v2 API: api.example.com/v2/...
+
+## Legacy patterns (deprecated Aug 2025)
+<details>
+<summary>Old v1 API</summary>
+Use v1 API: api.example.com/v1/...
+</details>"
+```
+
+#### Anti-Pattern 4: 曖昧な説明
+
+```
+❌ 有効性を説明しない
+REQUEST_TIMEOUT = 47
+MAX_RETRIES = 5
+
+✅ 設計根拠を説明
+# HTTP リクエストは通常 30 秒以内に完了
+# より長いタイムアウトは低速接続対応
+REQUEST_TIMEOUT = 30
+
+# 3 リトライが大多数の一時的エラーを解決
+MAX_RETRIES = 3
+```
+
+### 5. 簡潔さチェックリスト
+
+```
+□ SKILL.md 本文が500行以内
+□ 各セクションが明確な目的を持つ
+□ 冗長な説明がない（Claude は多くを知っている）
+□ パラメータの制約が明記
+□ エラーメッセージが具体的
+□ ファイル参照は相対パス（Unix スタイル）
+□ 例は最小限で実用的
+□ 難しい概念のみ説明、簡単なことは説明しない
+□ 説明は3文以内を目指す
+□ すべての指示に理由がある
+```
+
+### 6. テスト駆動開発（Evaluation-Driven Development）
+
+#### 流れ
+
+```
+1. テストケース設計（MIN 3個）
+   ├─ 通常ケース（1-2個）
+   └─ エッジケース（1個）
+
+2. ベースライン実行（with/without スキル）
+   ├─ Pass rate 計測
+   ├─ Token 計測
+   └─ 実行時間計測
+
+3. Assertion 追加
+   └─ 結果見てから追加（結果見ないと良い Assertion は書けない）
+
+4. Pass rate が目標到達 or 改善停滞 → 完了
+```
+
+#### チェックリスト
+
+```
+評価フェーズ
+□ evals.json に3個以上のテストケース
+□ 通常ケース、技術的、エッジケースを混在
+□ （オプション）with/without スキル比較実行
+□ Pass rate 計測
+
+改善フェーズ
+□ 失敗パターンをデータで特定
+□ SKILL.md を改善
+□ 新しい iteration で再実行
+□ 改善手止められるまで繰り返し
+```
+
+---
+
 ### 次のステップ
 
 1. **独自スキルの開発**

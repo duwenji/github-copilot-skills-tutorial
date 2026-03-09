@@ -516,9 +516,446 @@ SKILL.md で始めましょう
 
 ---
 
+---
+
+## SKILL.md YAML Frontmatter 完全仕様
+
+### Frontmatter とは
+
+SKILL.md ファイルの最初の YAML ブロック（`---` で挟まれた部分）です。スキルのメタデータと基本設定を記述します。
+
+```yaml
+---
+name: スキルの識別子
+description: スキルの説明と使用時機
+【オプション】
+license: ライセンス
+compatibility: 互換性・環境要件
+metadata: 追加情報
+allowed-tools: 事前承認ツール
+---
+```
+
+### 必須フィールド
+
+#### `name` （必須、64文字以下）
+
+スキルの一意の識別子。
+
+**ルール**
+- 小文字、数字、ハイフン（`-`）のみ使用可
+- 大文字は不可
+- 空白やアンダースコアは不可
+- ハイフンで開始・終了しない
+- 連続ハイフン（`--`）は不可
+- ディレクトリ名と一致する必要がある
+
+**例**
+```yaml
+# ✅ 有効
+name: pdf-processing
+name: code-quality-analyzer
+name: data-transformation-v2
+
+# ❌ 無効
+name: PDF Processing      # 空白・大文字
+name: pdf--processing     # 連続ハイフン
+name: -pdf-processing     # ハイフンで開始
+name: pdf_processing      # アンダースコア
+```
+
+#### `description` （必須、1024文字以下）
+
+スキルの説明と使用時機。エージェントがスキルを発見・選択する基準になります。
+
+**推奨要素**
+1. **何ができるか** - スキルの機能や処理内容
+2. **いつ使うか** - トリガーになるキーワードや文脈
+3. **具体的な例** - 実際の使用場面
+
+**例**
+```yaml
+# ✅ 優秀：機能 + 使用時機 + キーワード
+description: Extracts text and tables from PDF files, fills forms, and merges PDFs. Use when working with PDF documents, forms, or when the user mentions PDFs, PDFs, extraction, or document processing.
+
+# ✅ 良好：機能 + 使用時機
+description: Analyzes code quality across Python, JavaScript, TypeScript and detects readability, performance and security issues. Use for code reviews or when analyzing code for improvement.
+
+# ❌ 不十分：曖昧
+description: Helps with documents
+description: Processes data
+```
+
+### オプションフィールド
+
+#### `license` （オプション）
+
+スキルに適用されるライセンス。
+
+```yaml
+# ライセンス名
+license: MIT
+license: Apache-2.0
+license: GPL-3.0
+
+# または参照ファイル
+license: "Proprietary. See LICENSE.txt for details"
+```
+
+#### `compatibility` （オプション、500文字以下）
+
+スキルの環境要件や互換性情報。
+
+```yaml
+# 前提環境・ツール要件
+compatibility: "Requires Node.js 18+, Python 3.9+, and git"
+
+# 対応プラットフォーム
+compatibility: "Designed for Claude Code and GitHub.com Copilot Editor"
+
+# ネットワーク・外部システム要件
+compatibility: "Requires internet access and GitHub API authentication"
+
+# 複数条件
+compatibility: "Requires: Python 3.8+, pandas, numpy. Supports: Claude Sonnet 3.5+. Git-integrated repositories only."
+```
+
+**使用例**
+```yaml
+---
+name: github-actions-debugger
+description: Debugs failing GitHub Actions workflows
+compatibility: "Requires GitHub API access and repository admin permissions"
+---
+```
+
+#### `metadata` （オプション）
+
+任意のキー・バリュー情報。スキルについてのメタ情報を記述します。
+
+```yaml
+metadata:
+  author: "Alice Development Team"
+  version: "1.2.0"
+  category: "code-quality"
+  tags:
+    - python
+    - javascript
+    - testing
+  homepage: "https://docs.example.com/my-skill"
+```
+
+**推奨キー**
+| キー | 例 | 用途 |
+|------|-----|------|
+| `author` | `"Team Name"` | 作成・管理チーム |
+| `version` | `"1.0.0"` | セマンティックバージョン |
+| `category` | `"code-analysis"` | スキルの分類 |
+| `tags` | `["python", "testing"]` | 検索・フィルタ用タグ |
+| `homepage` | URL | ドキュメント・サポート URL |
+
+#### `allowed-tools` （オプション、実験的）
+
+スキルが使用を許可されたツールのリスト（スペース区切り）。
+
+```yaml
+# Git と jq の使用を許可
+allowed-tools: "Bash(git:*) Bash(jq:*) Read"
+
+# 特定バージョンに制限
+allowed-tools: "Python(3.9+) Bash(*)"
+
+# MCP ツール参照
+allowed-tools: "GitHub:create_issue GitHub:list_files Read"
+```
+
+**形式**: `ToolName(scope:action)` または `ToolName:tool_name`
+
+### 完全な実装例
+
+#### 例1：シンプルなスキル
+
+```yaml
+---
+name: commit-message-generator
+description: Generates meaningful commit messages from git diffs. Use when writing commit messages, describing changes, or needing help with version control documentation.
+license: MIT
+---
+```
+
+#### 例2：完全な定義
+
+```yaml
+---
+name: pdf-processing
+description: Extracts text and tables from PDF files, fills forms, and merges documents. Use when working with PDF files, forms, document extraction, or PDF manipulation.
+license: Apache-2.0
+compatibility: "Requires Python 3.8+ with pdfplumber library. Supports Claude Sonnet 3.5+. Optional: OCR requires tesseract-ocr."
+metadata:
+  author: "Document Processing Team"
+  version: "2.1.0"
+  category: "document-processing"
+  tags:
+    - pdf
+    - text-extraction
+    - forms
+    - document-management
+  homepage: "https://docs.example.com/pdf-processing"
+  updated: "2026-03-09"
+allowed-tools: "Python(3.8+) Bash(pdf*) Read"
+---
+```
+
+#### 例3：エンタープライズスキル
+
+```yaml
+---
+name: database-migration-assistant
+description: Guides database schema migrations with validation and rollback support. Use for schema changes, data transformation, migration planning, or database refactoring tasks.
+license: "Proprietary. See LICENSE.md"
+compatibility: "Requires: PostgreSQL 12+, Python 3.10+, access to git repository. Supports: production and staging environments only."
+metadata:
+  author: "Database Engineering Team"
+  version: "3.0.1"
+  category: "database"
+  subcategory: "migrations"
+  tags:
+    - postgresql
+    - migration
+    - schema-management
+    - data-integrity
+  homepage: "https://internal-docs.company.com/db-migrations"
+  support-channel: "#database-team"
+  sla: "4-hour response time"
+allowed-tools: "Bash(psql:*) Bash(git:*) Python(3.10+) Read Write"
+---
+```
+
+---
+
+## Progressive Disclosure（段階的情報開示）
+
+### 概念
+
+スキルで使用する情報を複数ファイルに分割し、**必要な時点で段階的に読み込む** パターンです。これにより、エージェントの文脈に余裕が生まれ、より効果的に実行できます。
+
+```
+段階1: メタデータ（常に先読み）
+├─ name, description
+├─ 文脈効率：～100トークン
+└─ 目的：スキル選択の判断基準
+
+段階2: 指示内容（スキル起動時に読み込み）
+├─ SKILL.md 本文（Markdown の手順・例）
+├─ 文脈効率：＜5000トークン、推奨500行以内
+└─ 目的：スキルの実行手順・ガイドライン
+
+段階3: 参考資料（必要に応じて読み込み）
+├─ references/REFERENCE.md
+├─ references/API.md
+├─ examples.md
+├─ 文脈効率：オンデマンド読み込み
+└─ 目的：詳細情報・API仕様・事例集
+```
+
+### 実装パターン
+
+#### パターン1：基本 + 参照ファイル
+
+**ディレクトリ構造**
+```
+pdf-processing/
+├── SKILL.md                  # 主要指示
+├── references/
+│   ├── FORMS.md             # フォーム入力ガイド
+│   ├── API.md               # pdfplumber API リファレンス
+│   └── EXAMPLES.md          # 使用例集
+└── scripts/
+    └── process_pdf.py       # 実行スクリプト
+```
+
+**SKILL.md の内容**
+```markdown
+---
+name: pdf-processing
+description: ...
+---
+
+# PDF Processing
+
+## Quick Start
+
+用 pdfplumber for extraction:
+\`\`\`python
+import pdfplumber
+with pdfplumber.open("file.pdf") as pdf:
+    text = pdf.pages[0].extract_text()
+\`\`\`
+
+## Features
+
+- **Text extraction**: [Quick examples](examples.md) | [Full API reference](references/API.md)
+- **Form filling**: See [FORMS.md](references/FORMS.md) for step-by-step guide
+- **Advanced usage**: See [EXAMPLES.md](references/EXAMPLES.md)
+```
+
+**参照ファイルは必要な時だけ読まれます。**
+
+#### パターン2：ドメイン別整理
+
+大規模スキルの場合、複数ドメインを参照ファイルで分割。
+
+**ディレクトリ構造**
+```
+bigquery-analytics/
+├── SKILL.md                  # ナビゲーション・概要
+├── datasets/
+│   ├── finance.md           # 財務データスキーマ
+│   ├── sales.md             # 営業パイプラインスキーマ
+│   └── product.md           # プロダクト使用状況スキーマ
+└── scripts/
+    └── query_builder.py
+```
+
+**SKILL.md**
+```markdown
+---
+name: bigquery-analytics
+description: Query BigQuery datasets for finance, sales, product data
+---
+
+# BigQuery Analytics
+
+Select a domain:
+
+- **Finance data**: Revenue, ARR, margin analysis → See [datasets/finance.md](datasets/finance.md)
+- **Sales pipeline**: Opportunities, forecasting → See [datasets/sales.md](datasets/sales.md)
+- **Product usage**: API metrics, adoption → See [datasets/product.md](datasets/product.md)
+```
+
+**ユーザーが「finance」を求めると、finance.md のみ読み込まれます。**
+
+#### パターン3：基本 + 条件付き詳細
+
+シンプルな手順 + オプション情報
+
+```markdown
+---
+name: docx-processing
+description: Create, edit, and manipulate DOCX documents
+---
+
+# DOCX Processing
+
+## Basic Document Creation
+
+Use docx-js library:
+\`\`\`python
+from docxjs import Document
+doc = Document()
+doc.add_paragraph("Hello")
+doc.save("output.docx")
+\`\`\`
+
+## Advanced Features
+
+**Tracked changes** (for collaboration):
+→ See [TRACKED_CHANGES.md](TRACKED_CHANGES.md)
+
+**Complex formatting**:
+→ See [FORMATTING.md](FORMATTING.md)
+
+**XML manipulation**:
+→ See [OOXML_DETAILS.md](OOXML_DETAILS.md)
+```
+
+Tracked_CHANGES.md は、ユーザーが「追跡」や「変更」をリクエストした時だけ読まれます。
+
+### 実装のコツ
+
+#### 1. ファイルサイズに注意
+
+```
+SKILL.md（主指示）
+├─ 推奨：500行以内
+├─ 上限：1000行
+└─ 超える場合は参照ファイルに分割
+
+References（参照ファイル）
+├─ 1ファイル：100～500行
+├─ 目次を含める（100行超える場合）
+└─ ネストしない（1段階深さのみ）
+```
+
+#### 2. 参照の明確性
+
+```markdown
+# ❌ 曖昧
+詳細は別ファイルを参照してください
+
+# ✅ 明確
+**Advanced options**: See [configuration.md](configuration.md)
+**API reference**: See [references/API.md](references/API.md)
+**Usage examples**: See [examples.md](examples.md)
+```
+
+#### 3. 相対パス（重要）
+
+```markdown
+# ✅ 相対パス（すべてのプラットフォームで動作）
+See [guide.md](references/guide.md)
+Run: python scripts/process.py
+
+# ❌ 絶対パス（Windows で失敗）
+See [guide.md](/home/user/skills/references/guide.md)
+C:\skills\scripts\process.py
+```
+
+#### 4. 目次を含める（100行超える参照ファイル）
+
+```markdown
+# API Reference
+
+## Contents
+- Authentication
+- Core methods (create, read, update)
+- Advanced features
+- Error handling
+- Examples
+
+## Authentication
+...
+
+## Core methods
+...
+```
+
+### 効果
+
+**トークン効率**
+```
+レファレンスなし（全て SKILL.md に):
+└─ 常に 5000+ トークン消費
+
+Progressive disclosure（参照ファイル分割）:
+├─ メタデータ：100 トークン（常に）
+├─ SKILL.md 本文：2000 トークン（起動時）
+├─ 参照ファイル：オンデマンド（必要時のみ）
+└─ → 平均削減：30-50% のトークン節約
+```
+
+**ユーザー体験**
+- 起動が高速（メタデータのみ先読み）
+- 不要な情報を読まない
+- 詳細が必要な時だけアクセス
+
+---
+
 ## 関連ドキュメント
 
 - 📖 GitHub 公式: [Creating agent skills](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills)
 - 📚 本チュートリアル
   - Part 1-1: Agent Skills とは
   - Part 3-1: スキル開発の始め方
+  - Part 4-5: スクリプト設計ベストプラクティス（次セクション）
+  - Part 3-6: スキル評価フレームワーク（次セクション）
