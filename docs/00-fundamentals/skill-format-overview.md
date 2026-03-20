@@ -221,6 +221,8 @@ If issue is not in the checklist, provide:
 | 個人スキル | `~/.copilot/skills/` | あなたのマシンでのみ |
 | 組織共有 | GitHub Skills Registry | 企業内全体で共有 |
 
+> 💡 複数リポでの共通化や git submodule / subtree を使った配布手順 → [Part 4-6: 複数リポでの SKILL 共通化](../04-advanced/06-multi-repo-skill-sharing.md)
+
 ---
 
 ## ② JSON形式（内部通信・スキーマ検証用）
