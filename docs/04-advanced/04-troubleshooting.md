@@ -2,6 +2,25 @@
 
 実運用で発生しやすい問題と解決方法を実装例付きで解説します。
 
+## 現場運用でよく使う用語
+
+| 用語 | 意味（本教材での定義） |
+|------|------------------------|
+| runbook | 現場向けの作業手順書 |
+| remediation | 不具合の是正対応 |
+| gate | 次に進むための確認ポイント |
+| evidence / trace | 作業証跡 |
+| scope | 対象範囲 |
+| rollout | 横展開 |
+
+### 運用フローの要点
+
+runbookに沿って、確認ポイント（gate）を通過しながら、証跡（evidence/trace）を残して、対象範囲（scope）を漏れなく是正（remediation）し、最後に横展開（rollout）する。
+
+詳細な手法・テンプレートは以下を参照:
+
+- [Part 4-7: 運用手法（Runbook / Gate / Evidence / Scope / Rollout）](07-operations-methodology.md)
+
 ---
 
 ## よくある問題と解決策

@@ -331,6 +331,10 @@ Version Format: MAJOR.MINOR.PATCH
 
 ### ステップ3: 公開・告知
 
+実運用への接続を標準化するため、公開時点で運用手法も合わせて案内します。
+
+- 参照: [Part 4-7: 運用手法（Runbook / Gate / Evidence / Scope / Rollout）](07-operations-methodology.md)
+
 ```
 公開チェックリスト：
 □ スキルレジストリに登録
