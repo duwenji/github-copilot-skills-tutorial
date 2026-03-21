@@ -5,5 +5,5 @@
   "metadataFile": "./.github/skills-config/ebook-build/github-copilot-skills-tutorial.metadata.yaml",
   "chapterDirPattern": "^\\d{2}-",
   "chapterFilePattern": "^.*\\.md$",
-  "coverFile": "README.md"
+  "coverFile": "00-COVER.md"
 }
