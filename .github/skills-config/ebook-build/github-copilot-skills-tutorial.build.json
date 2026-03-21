@@ -3,8 +3,6 @@
   "outputDir": "./ebook-output",
   "projectName": "github-copilot-skills-tutorial",
   "metadataFile": "./.github/skills-config/ebook-build/github-copilot-skills-tutorial.metadata.yaml",
-  "formats": ["epub", "azw3", "mobi"],
-  "enablePageList": true,
   "chapterDirPattern": "^\\d{2}-",
   "chapterFilePattern": "^.*\\.md$",
   "coverFile": "README.md"
