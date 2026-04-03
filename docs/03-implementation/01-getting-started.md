@@ -189,7 +189,7 @@ JSON Schema で定義：
 | **推奨対象** | ほぼすべての開発者 | システム開発者・複雑なケース |
 | **学習パス** | Part 0 を確認 | このセクションを続行 |
 
-👉 **初めてなら [Part 0: スキル形式の理解](../../00-fundamentals/skill-format-overview.md) で SKILL.md フォーマットを学んでください。**
+👉 **初めてなら [Part 0: スキル形式の理解](../../00-fundamentals/00-skill-format-overview.md) で SKILL.md フォーマットを学んでください。**
 
 ---
 

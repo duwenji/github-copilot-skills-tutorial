@@ -74,10 +74,10 @@ Agent Skills = Anthropic のオープンスタンダード
 
 | 形式 | 保存場所 | 推奨対象 | 学習パス |
 |------|---------|---------|--------|
-| **SKILL.md**（推奨） | `.github/skills/SKILL.md` | ほぼすべての開発者 | [Part 0: スキル形式の理解](../../00-fundamentals/skill-format-overview.md) |
+| **SKILL.md**（推奨） | `.github/skills/SKILL.md` | ほぼすべての開発者 | [Part 0: スキル形式の理解](../../00-fundamentals/00-skill-format-overview.md) |
 | **JSON**（参考） | API層・内部管理 | システム開発者・複雑なケース | このセクション以降 |
 
-👉 **初めての方は [Part 0: スキル形式の理解](../../00-fundamentals/skill-format-overview.md) をお読みください。**
+👉 **初めての方は [Part 0: スキル形式の理解](../../00-fundamentals/00-skill-format-overview.md) をお読みください。**
 
 ---
 
