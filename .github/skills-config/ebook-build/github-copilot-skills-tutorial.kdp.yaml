@@ -1,0 +1,26 @@
+title: GitHub Copilot Agent Skills Tutorial
+subtitle: Skills 設計・評価・運用のベストプラクティス
+description: >
+  GitHub Copilot Skills の構造、記述ルール、評価方法、保守運用までを体系的に学ぶ日本語チュートリアルです。
+  SKILL.md の書き方だけでなく、再利用可能なスキル設計、適用条件、品質改善の進め方まで整理しています。
+keywords:
+  - GitHub Copilot
+  - Agent Skills
+  - SKILL.md
+  - Tutorial
+  - Prompt Design
+  - AI Development
+  - Evaluation
+categories:
+  - Computers / Software Development / Tools
+  - Computers / Programming / General
+  - Computers / Artificial Intelligence / General
+listPrice: "1880 JPY"
+royaltyPlan: "70%"
+territories: Worldwide
+kdpSelect: "No"
+ageRange: 指定なし
+gradeRange: 指定なし
+trimSize: "6in x 9in"
+bleed: "No bleed"
+layout: fixed-layout PDF
