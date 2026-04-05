@@ -6,7 +6,7 @@ GitHub Copilot の Agent Skills を、基礎概念から実装・評価・運用
 
 本書では、個人開発者からチーム導入までを想定し、再利用可能なスキル設計、検証フロー、運用ベストプラクティスを一冊でカバーします。
 
-> 💡 ブラウザで https://duwenji.github.io/spa-quiz-app/ を開くと、この教材をクイズ形式で学習できます。
+> 💡 ブラウザで https://duwenji.github.io/spa-quiz-app/ を開くと、関連トピックをクイズ形式で復習できます。
 
 ---
 

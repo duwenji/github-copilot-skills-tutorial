@@ -2,7 +2,7 @@
 
 GitHub Copilot Agent Skills（エージェントスキル）を「基礎から実践的な活用方法まで」学べるチュートリアルです。
 
-> 💡 ブラウザで https://duwenji.github.io/spa-quiz-app/ を開くと、この教材をクイズ形式で学習できます。
+> 💡 ブラウザで https://duwenji.github.io/spa-quiz-app/ を開くと、関連トピックをクイズ形式で復習できます。
 
 **🎉 完全版 - 23セクション、総11時間50分の学習コンテンツ**
 
