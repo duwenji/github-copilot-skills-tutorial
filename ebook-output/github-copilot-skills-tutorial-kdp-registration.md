@@ -1,6 +1,6 @@
 # KDP 登録情報一式: GitHub Copilot Agent Skills Tutorial
 
-- 生成日時: 2026-04-05 11:38:57
+- 生成日時: 2026-04-05 13:08:15
 - プロジェクト名: github-copilot-skills-tutorial
 - 元メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.metadata.yaml
 - KDP 追加メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.kdp.yaml
