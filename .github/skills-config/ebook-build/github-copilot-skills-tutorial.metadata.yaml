@@ -1,13 +1,33 @@
-title: GitHub Copilot Agent Skills Tutorial
-creator: 杜 文吉
+title: "GitHub Copilot Agent Skills Tutorial"
+subtitle: "Skills 設計・評価・運用のベストプラクティス"
+creator: "杜 文吉"
+date: "2026-03-21"
 language: ja-JP
-rights: Copyright (c) Duwenji
-publisher: Duwenji
-date: 2026-03-21
+publisher: "GitHub"
+rights: "Creative Commons Attribution 4.0 International License"
+identifier: "github-copilot-skills-tutorial-v1"
+description: |
+  GitHub Copilot Skills の構造、記述ルール、評価方法、保守運用までを体系的に学ぶ
+  日本語チュートリアルです。
+  SKILL.md の書き方だけでなく、再利用可能なスキル設計、適用条件、
+  品質改善の進め方まで整理しています。
+keywords:
+  - GitHub Copilot
+  - Agent Skills
+  - SKILL.md
+  - Tutorial
+  - Prompt Design
+  - AI Development
+  - Evaluation
+cover: "00-COVER.md"
 toc: true
 toc-depth: 2
-identifier: gcopilot-skills-tutorial-v1
-subject:
-  - github copilot
-  - agent skills
-  - tutorial
+chapters:
+  auto-discover: true
+  dir-pattern: "^\\d{2}-"
+  file-pattern: "^\\d{2}-.*\\.md$"
+include-readme: false
+version: "0.1"
+revision-date: "2026-04-08"
+license: "CC-BY-4.0"
+license-url: "https://creativecommons.org/licenses/by/4.0/"

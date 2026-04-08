@@ -1,6 +1,6 @@
 # KDP 登録情報一式: GitHub Copilot Agent Skills Tutorial
 
-- 生成日時: 2026-04-05 16:23:44
+- 生成日時: 2026-04-08 23:07:12
 - プロジェクト名: github-copilot-skills-tutorial
 - 元メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.metadata.yaml
 - KDP 追加メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.kdp.yaml
@@ -13,9 +13,9 @@
 | サブタイトル | Skills 設計・評価・運用のベストプラクティス |
 | 著者 | 杜 文吉 |
 | 言語 | ja-JP |
-| 出版社 | Duwenji |
-| 権利 | Copyright (c) Duwenji |
-| 識別子 | gcopilot-skills-tutorial-v1 |
+| 出版社 | GitHub |
+| 権利 | Creative Commons Attribution 4.0 International License |
+| 識別子 | github-copilot-skills-tutorial-v1 |
 | 出版日 | 2026-03-21 |
 | ISBN | Kindle 版のみなら通常不要 |
 
