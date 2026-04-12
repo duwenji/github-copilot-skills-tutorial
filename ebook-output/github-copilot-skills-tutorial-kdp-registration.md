@@ -1,9 +1,9 @@
 # KDP 登録情報一式: GitHub Copilot Agent Skills Tutorial
 
-- 生成日時: 2026-04-11 18:56:46
+- 生成日時: 2026-04-12 17:16:15
 - プロジェクト名: github-copilot-skills-tutorial
-- 元メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.metadata.yaml
-- KDP 追加メタデータ: C:\dev\apps\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.kdp.yaml
+- 元メタデータ: C:\Dev\tutorials\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.metadata.yaml
+- KDP 追加メタデータ: C:\Dev\tutorials\github-copilot-skills-tutorial\.\.github\skills-config\ebook-build\github-copilot-skills-tutorial.kdp.yaml
 
 ## 1. 基本書誌情報
 
@@ -60,8 +60,8 @@
 
 ## 7. アップロード対象ファイル
 
-- EPUB: C:\dev\apps\github-copilot-skills-tutorial\.\ebook-output\github-copilot-skills-tutorial.epub
-- PDF: C:\dev\apps\github-copilot-skills-tutorial\.\ebook-output\github-copilot-skills-tutorial.pdf
+- EPUB: C:\Dev\tutorials\github-copilot-skills-tutorial\.\ebook-output\github-copilot-skills-tutorial.epub
+- PDF: C:\Dev\tutorials\github-copilot-skills-tutorial\.\ebook-output\github-copilot-skills-tutorial.pdf
 
 ## 8. 公開前 TODO
 
