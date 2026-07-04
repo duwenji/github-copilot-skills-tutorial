@@ -1,0 +1,20 @@
+{
+  "name": "github-copilot-skills-tutorial",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GitHub Copilot Skills の設計・評価・運用を学ぶ日本語チュートリアルです。",
+  "license": "MIT",
+  "author": "杜 文吉",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duwenji/github-copilot-skills-tutorial.git"
+  },
+  "homepage": "https://github.com/duwenji/github-copilot-skills-tutorial",
+  "scripts": {
+    "ebook:build": "powershell -ExecutionPolicy Bypass -File ./.github/skills-config/ebook-build/invoke-build.ps1",
+    "ebook:step1": "powershell -ExecutionPolicy Bypass -File ./.github/skills-config/ebook-build/invoke-build.ps1 -BuildStep step1",
+    "ebook:step2": "powershell -ExecutionPolicy Bypass -File ./.github/skills-config/ebook-build/invoke-build.ps1 -BuildStep step2",
+    "ebook:step2b": "powershell -ExecutionPolicy Bypass -File ./.github/skills-config/ebook-build/invoke-build.ps1 -BuildStep step2b",
+    "ebook:step3": "powershell -ExecutionPolicy Bypass -File ./.github/skills-config/ebook-build/invoke-build.ps1 -BuildStep step3"
+  }
+}

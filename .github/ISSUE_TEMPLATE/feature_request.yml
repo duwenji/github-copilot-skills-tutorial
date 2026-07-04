@@ -1,0 +1,33 @@
+name: Feature request
+description: 教材に追加したいスキル例やトピック、改善案を提案します
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 背景・課題
+      description: どんな学習上・実装上の課題を解決したいですか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案内容
+      description: 追加したい章、サンプルスキル、演習など
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scenario
+    attributes:
+      label: 関連パート
+      options:
+        - Part 0 スキル形式の理解
+        - Part 1 基礎編
+        - Part 2 比較分析編
+        - Part 3 実装編
+        - Part 4 活用編
+        - Part 5 高度な活用
+        - その他
